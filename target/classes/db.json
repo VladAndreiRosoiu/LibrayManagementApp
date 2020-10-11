@@ -1,7 +1,0 @@
-{
-  "serverURL" : "127.0.0.1",
-  "serverPort" : "3306",
-  "database": "libraryDB",
-  "user": "vladr",
-  "password": "vladr"
-}
