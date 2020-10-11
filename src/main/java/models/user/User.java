@@ -8,13 +8,13 @@ public class User {
     private String email;
     private UserType userType;
 
-    public User(int id, String firstName, String lastName, String user, String email,UserType userType) {
+    public User(int id, String firstName, String lastName, String user, String email, UserType userType) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.user = user;
         this.email = email;
-        this.userType=userType;
+        this.userType = userType;
     }
 
     public int getId() {
