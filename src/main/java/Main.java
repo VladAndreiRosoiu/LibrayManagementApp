@@ -16,6 +16,7 @@ public class Main {
     public static void main(String[] args) {
 
         try {
+
             Connection connection = GetDBConnection.getConnection(GetCredentials.readCredentials(CONN_FILE).get("serverURL"),
                     GetCredentials.readCredentials(CONN_FILE).get("serverPort"),
                     GetCredentials.readCredentials(CONN_FILE).get("database"),
