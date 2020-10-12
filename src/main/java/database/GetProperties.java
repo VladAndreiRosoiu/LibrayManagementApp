@@ -7,11 +7,11 @@ import java.io.InputStream;
 import java.util.Properties;
 
 public class GetProperties {
-    public static Properties getDBProperties(File propertiesFile){
-        Properties properties=new Properties();
-        try(InputStream inputStream = new FileInputStream(propertiesFile)){
+    public static Properties getDBProperties(File propertiesFile) {
+        Properties properties = new Properties();
+        try (InputStream inputStream = new FileInputStream(propertiesFile)) {
             properties.load(inputStream);
-        }catch (IOException e){
+        } catch (IOException e) {
             System.out.println(e.getMessage());
         }
         return properties;

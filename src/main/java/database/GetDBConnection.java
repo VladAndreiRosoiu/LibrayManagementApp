@@ -12,9 +12,9 @@ public class GetDBConnection {
 
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection("jdbc:mysql://" +
-                GetProperties.getDBProperties(CONN_FILE).getProperty("serverURL") + ":" +
-                GetProperties.getDBProperties(CONN_FILE).getProperty("serverPort") + "/" +
-                GetProperties.getDBProperties(CONN_FILE).getProperty("database") + "?serverTimezone=UTC",
+                        GetProperties.getDBProperties(CONN_FILE).getProperty("serverURL") + ":" +
+                        GetProperties.getDBProperties(CONN_FILE).getProperty("serverPort") + "/" +
+                        GetProperties.getDBProperties(CONN_FILE).getProperty("database") + "?serverTimezone=UTC",
                 GetProperties.getDBProperties(CONN_FILE).getProperty("user"),
                 GetProperties.getDBProperties(CONN_FILE).getProperty("password"));
     }
