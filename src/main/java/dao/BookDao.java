@@ -6,7 +6,7 @@ import models.book.Genre;
 
 import java.util.List;
 
-public interface BookDao {
+public interface BookDao extends EntityDao<Book> {
     Book findByIsbn (long isbn);
     Book findByName (String name);
     List<Book> findByAuthor (Author author);
