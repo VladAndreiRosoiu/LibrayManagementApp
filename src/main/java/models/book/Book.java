@@ -1,22 +1,25 @@
 package models.book;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class Book {
     private int id;
-    private String book;
-    private Author author;
+    private String bookName;
+    private List<Author> authors;
+    private List<Genre> genres;
     private long isbn;
     private LocalDate releaseDate;
     private boolean isBooKBorrowed;
 
-    public Book(int id, String book, Author author, long isbn, LocalDate releaseDate, boolean isBooKBorrowed) {
+    public Book(int id, String bookName, List<Author> authors, List<Genre> genres, long isbn, LocalDate releaseDate, boolean isBookBorrowed) {
         this.id = id;
-        this.book = book;
-        this.author = author;
+        this.bookName = bookName;
+        this.authors = authors;
+        this.genres=genres;
         this.isbn = isbn;
         this.releaseDate = releaseDate;
-        this.isBooKBorrowed = isBooKBorrowed;
+        this.isBooKBorrowed = isBookBorrowed;
     }
 
     public int getId() {
@@ -27,20 +30,28 @@ public class Book {
         this.id = id;
     }
 
-    public String getBook() {
-        return book;
+    public String getBookName() {
+        return bookName;
     }
 
-    public void setBook(String book) {
-        this.book = book;
+    public void setBookName(String bookName) {
+        this.bookName = bookName;
     }
 
-    public Author getAuthor() {
-        return author;
+    public List<Author> getAuthors() {
+        return authors;
     }
 
-    public void setAuthor(Author author) {
-        this.author = author;
+    public void setAuthors(List<Author> authors) {
+        this.authors = authors;
+    }
+
+    public List<Genre> getGenres() {
+        return genres;
+    }
+
+    public void setGenres(List<Genre> genres) {
+        this.genres = genres;
     }
 
     public long getIsbn() {
