@@ -16,7 +16,7 @@ public class Book {
         this.id = id;
         this.bookName = bookName;
         this.authors = authors;
-        this.genres=genres;
+        this.genres = genres;
         this.isbn = isbn;
         this.releaseDate = releaseDate;
         this.isBooKBorrowed = isBookBorrowed;

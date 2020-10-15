@@ -7,9 +7,13 @@ import models.book.Genre;
 import java.util.List;
 
 public interface BookDao extends EntityDao<Book> {
-    Book findByIsbn (long isbn);
-    Book findByName (String name);
-    List<Book> findByAuthor (Author author);
-    List<Book> findByGenre (Genre genre);
-    boolean removeByIsbn (long isbn);
+    Book findByIsbn(long isbn);
+
+    Book findByName(String name);
+
+    List<Book> findByAuthor(Author author);
+
+    List<Book> findByGenre(Genre genre);
+
+    boolean removeByIsbn(long isbn);
 }

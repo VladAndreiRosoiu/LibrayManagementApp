@@ -8,6 +8,9 @@ public class User {
     private String email;
     private UserType userType;
 
+    public User() {
+    }
+
     public User(int id, String firstName, String lastName, String user, String email, UserType userType) {
         this.id = id;
         this.firstName = firstName;
