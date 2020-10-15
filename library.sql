@@ -30,8 +30,7 @@ id INT PRIMARY KEY AUTO_INCREMENT,
 book_name VARCHAR(255) NOT NULL,
 isbn BIGINT UNIQUE,
 quantity INT NOT NULL,
-release_date DATE NOT NULL,
-is_book_borrowed BOOLEAN DEFAULT FALSE);
+release_date DATE NOT NULL);
 
 CREATE TABLE book_author(
 id INT PRIMARY KEY AUTO_INCREMENT,
@@ -60,8 +59,8 @@ FOREIGN KEY (id_user) REFERENCES users(id),
 FOREIGN KEY (id_book) REFERENCES books(id)
 );
 
-INSERT INTO libraryDB.authors(first_name, last_name, aditional_info, birth_date ) 
-VALUES 
+INSERT INTO libraryDB.authors(first_name, last_name, aditional_info, birth_date )
+VALUES
 ('Naomi', 'Novik' , 'Naomi Novik is an American author of speculative fiction. Novik won both the Nebula Award for Best Novel and the Mythopoeic Fantasy Award in 2016 for her novel Uprooted.', '1973-04-30'),
 ('Roshani', 'Chokshi', 'Roshani Chokshi is an American children\' book author and a New York Times bestselling author.' , '1991-02-14'),
 ('Anthony', 'Doerr','Anthony Doerr is an American author of novels and short stories. He gained widespread recognition for his 2014 novel All the Light We Cannot See, which won the Pulitzer Prize for Fiction. ' ,'1973-10-27'),
@@ -129,7 +128,7 @@ VALUES
 ('Political Fiction'),
 ('Epic'),
 ('Adventure Fiction'),
-('Nautical Fiction'); 
+('Nautical Fiction');
 
 INSERT INTO libraryDB.book_genre (id_book, id_genre)
 VALUES
@@ -185,4 +184,12 @@ VALUES
 INSERT INTO libraryDB.borrowed_book_user (id_user, id_book, borrowed_on)
 VALUES
 (1, 6, '2020-10-01'),
-(3, 4, '2020-10-10')
+(3, 4, '2020-10-10');
+
+UPDATE libraryDB.books
+SET quantity = (quantity-1)
+WHERE id=6;
+
+UPDATE libraryDB.books
+SET quantity = (quantity-1)
+WHERE id=4;
