@@ -29,7 +29,7 @@ CREATE TABLE books(
 id INT PRIMARY KEY AUTO_INCREMENT,
 book_name VARCHAR(255) NOT NULL,
 isbn BIGINT UNIQUE,
-quantity INT NOT NULL,
+stock INT NOT NULL,
 release_date DATE NOT NULL);
 
 CREATE TABLE book_author(
@@ -75,7 +75,7 @@ VALUES
 ('Andrew', 'Delbanco', 'Andrew H. Delbanco is the Alexander Hamilton Professor of American Studies at Columbia University. He is the author of several books, including College: What It Was, Is, and Should Be, which has been translated into Chinese, Korean, Turkish, Russian, and Hebrew. ', '1952-02-20'),
 ('Rockwell', 'Kent', 'Rockwell Kent was an American painter, printmaker, illustrator, writer, sailor, adventurer and voyager.', '1882-06-21');
 
-INSERT INTO libraryDB.books(book_name, isbn, quantity, release_date)
+INSERT INTO libraryDB.books(book_name, isbn, stock, release_date)
 VALUES
 ('A Deadly Education', 9780593128480, 10, '2020-09-29'),
 ('The Silvered Serpents', 9781250144577, 5, '2020-09-22'),
@@ -187,9 +187,9 @@ VALUES
 (3, 4, '2020-10-10');
 
 UPDATE libraryDB.books
-SET quantity = (quantity-1)
+SET stock = (stock-1)
 WHERE id=6;
 
 UPDATE libraryDB.books
-SET quantity = (quantity-1)
+SET stock = (stock-1)
 WHERE id=4;

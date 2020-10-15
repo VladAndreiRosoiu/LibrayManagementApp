@@ -1,15 +1,12 @@
 package models.user;
 
-public class User {
+public abstract class User {
     private int id;
     private String firstName;
     private String lastName;
     private String user;
     private String email;
     private UserType userType;
-
-    public User() {
-    }
 
     public User(int id, String firstName, String lastName, String user, String email, UserType userType) {
         this.id = id;
@@ -66,5 +63,17 @@ public class User {
 
     public void setUserType(UserType userType) {
         this.userType = userType;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", user='" + user + '\'' +
+                ", email='" + email + '\'' +
+                ", userType=" + userType +
+                '}';
     }
 }
