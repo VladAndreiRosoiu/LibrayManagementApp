@@ -1,8 +1,10 @@
 package services;
 
-import models.user.User;
+import models.user.Client;
+import models.user.Librarian;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public interface AuthService {
@@ -11,5 +13,9 @@ public interface AuthService {
 
     String getPassword(String password);
 
-    String getUserDetails(Connection connection, int id, String password) throws SQLException;
+    ResultSet getUser(Connection connection, int id, String password) throws SQLException;
+
+    Client getClient(Connection connection, ResultSet resultSet) throws SQLException;
+
+    Librarian getLibrarian(Connection connection, ResultSet resultSet) throws SQLException;
 }

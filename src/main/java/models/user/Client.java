@@ -12,9 +12,9 @@ public class Client extends User {
 
     public Client(int id, String firstName, String lastName, String user, String email, List<Book> borrowedBooks, Book currentBorrowedBook, boolean isActive) {
         super(id, firstName, lastName, user, email, UserType.CLIENT);
-        this.borrowedBooks=borrowedBooks;
-        this.currentBorrowedBook=currentBorrowedBook;
-        this.isActive=isActive;
+        this.borrowedBooks = borrowedBooks;
+        this.currentBorrowedBook = currentBorrowedBook;
+        this.isActive = isActive;
     }
 
     public List<Book> getBorrowedBooks() {

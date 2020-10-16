@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 public class Main {
 
-    public static void main(String[] args) throws SQLException{
+    public static void main(String[] args) {
         try {
             Connection connection = GetDBConnection.getConnection();
             Library library = new Library(connection);
@@ -14,5 +14,6 @@ public class Main {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+
     }
 }

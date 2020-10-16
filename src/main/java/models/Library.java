@@ -7,7 +7,6 @@ import dao.DbBookDao;
 import models.book.Book;
 import models.user.Client;
 import models.user.Librarian;
-import models.user.UserType;
 import services.AuthService;
 import services.AuthServiceImpl;
 
@@ -33,49 +32,70 @@ public class Library {
     }
 
     public void initLibrary() throws SQLException {
+        int option;
+        welcomeMenu();
+        option = scanner.nextInt();
+        doWelcomeMenu(option);
         do {
-            int option;
-            welcomeMenu();
-            option = scanner.nextInt();
-            doWelcomeMenu(option);
+            if (client != null) {
+                //TODO client logic
+                clientMenu();
+                option = scanner.nextInt();
+                switch (option) {
+                    case 1:
+                        //TODO
+                        break;
+                    case 2:
+                        //TODO
+                        //TODO
+                        break;
+                    default:
+                        clientMenu();
+                }
+            }
+            if (librarian != null) {
+                //TODO librarian logic
+                librarianMenu();
+                option = scanner.nextInt();
+                switch (option) {
+                    case 1:
+                        //TODO
+                        break;
+                    case 2:
+                        //TODO
+                        //TODO
+                        break;
+                    default:
+                        librarianMenu();
+                }
+            }
         } while (client != null || librarian != null);
     }
 
-    private String doLogin() throws SQLException {
-        System.out.println("Please enter username:");
-        String username = scanner.next();
-        int id = authService.getUserId(connection, username);
-        if (id > 0) {
-            byte tries = 3;
-            StringBuilder s= new StringBuilder();
-            do {
-                System.out.println("Please enter password");
-                String password = scanner.next();
-                tries--;
-                s.append(authService.getUserDetails(connection, id, authService.getPassword(password)));
-            } while (tries > 0 && s.equals(null));
-            System.out.println(s);
-            return s.toString();
-        } else {
-            System.out.println("Something went wrong..");
-            System.out.println("Username could not be found! Please try again!");
-        }
-        return null;
+
+//------------------- CLIENT MENUS && SUBMENUS -------------------------------------------------------------------------
+
+    private void clientMenu() {
     }
 
-    private void setLoggedInUser(String userDetails) {
-        if (userDetails != null){
-            String [] arrayDetails = userDetails.split(",");
-            if (arrayDetails[5].equals(UserType.CLIENT.toString())){
-                //client = new Client(arrayDetails[0],arrayDetails[1], arrayDetails[2], arrayDetails[3], arrayDetails[4], );
-            }else if (arrayDetails[5].equals(UserType.LIBRARIAN.toString())){
-                librarian = new Librarian(Integer.parseInt(arrayDetails[0]),arrayDetails[1], arrayDetails[2], arrayDetails[3], arrayDetails[4]);
-            }
-        } else {
-            System.out.println("Please login first!");
-        }
+    private List<Book> getClientBorrowedBooks(int id) throws SQLException {
+        List<Book> borrowedBooks = new ArrayList<>();
+        String query = "SELECT * FROM libraryDB.borrowed_book_user WHERE id_user = ?";
+        PreparedStatement ps = connection.prepareStatement(query);
+        ps.setString(1, String.valueOf(id));
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
 
+        }
+        return borrowedBooks;
     }
+
+//------------------- LIBRARIAN MENUS && SUBMENUS ----------------------------------------------------------------------
+
+    private void librarianMenu() {
+    }
+
+//------------------- PRINT METHODS ------------------------------------------------------------------------------------
 
     private void welcomeMenu() {
         System.out.println("Welcome to library!");
@@ -84,10 +104,42 @@ public class Library {
         System.out.println("Please enter an option!");
     }
 
+//------------------- CLIENT RELATED METHODS ---------------------------------------------------------------------------
+
+
+//------------------- LIBRARIAN RELATED METHODS ------------------------------------------------------------------------
+
+
+// ------------------- GENERAL USE METHODS -----------------------------------------------------------------------------
+
+    private void doLogin() throws SQLException {
+        System.out.println("Please enter username:");
+        String username = scanner.next();
+        int id = authService.getUserId(connection, username);
+        if (id > 0) {
+            byte tries = 3;
+            do {
+                System.out.println("Please enter password");
+                String password = scanner.next();
+                ResultSet resultSet = authService.getUser(connection, id, password);
+                if (authService.getClient(connection, resultSet) != null) {
+                    client = authService.getClient(connection, resultSet);
+                    break;
+                } else if (authService.getLibrarian(connection, resultSet) != null) {
+                    librarian = authService.getLibrarian(connection, resultSet);
+                    break;
+                }
+                tries--;
+            } while (tries > 0 && client == null || librarian == null);
+        } else {
+            System.out.println("Username could not be found! Please try again!");
+        }
+    }
+
     private void doWelcomeMenu(int option) throws SQLException {
         switch (option) {
             case 1:
-                setLoggedInUser(doLogin());
+                doLogin();
                 break;
             case 2:
                 //TODO -- register new models.user
@@ -98,15 +150,4 @@ public class Library {
         }
     }
 
-    private List<Book> getClientBorrowedBooks(int id) throws SQLException{
-        List<Book> borrowedBooks = new ArrayList<>();
-        String query = "SELECT * FROM libraryDB.borrowed_book_user WHERE id_user = ?";
-        PreparedStatement ps = connection.prepareStatement(query);
-        ps.setString(1, String.valueOf(id));
-        ResultSet rs = ps.executeQuery();
-        while (rs.next()){
-
-        }
-        return borrowedBooks;
-    }
 }
