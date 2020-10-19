@@ -10,16 +10,16 @@ public class Book {
     private List<Genre> genres;
     private long isbn;
     private LocalDate releaseDate;
-    private boolean isBooKBorrowed;
+    private int stock;
 
-    public Book(int id, String bookName, List<Author> authors, List<Genre> genres, long isbn, LocalDate releaseDate, boolean isBookBorrowed) {
+    public Book(int id, String bookName, List<Author> authors, List<Genre> genres, long isbn, LocalDate releaseDate, int stock) {
         this.id = id;
         this.bookName = bookName;
         this.authors = authors;
         this.genres = genres;
         this.isbn = isbn;
         this.releaseDate = releaseDate;
-        this.isBooKBorrowed = isBookBorrowed;
+        this.stock = stock;
     }
 
     public int getId() {
@@ -70,11 +70,24 @@ public class Book {
         this.releaseDate = releaseDate;
     }
 
-    public boolean isBooKBorrowed() {
-        return isBooKBorrowed;
+    public int getStock() {
+        return stock;
     }
 
-    public void setBooKBorrowed(boolean booKBorrowed) {
-        isBooKBorrowed = booKBorrowed;
+    public void setStock(int stock) {
+        this.stock = stock;
+    }
+
+    @Override
+    public String toString() {
+        return "Book{" +
+                "id=" + id +
+                ", bookName='" + bookName + '\'' +
+                ", authors=" + authors +
+                ", genres=" + genres +
+                ", isbn=" + isbn +
+                ", releaseDate=" + releaseDate +
+                ", stock=" + stock +
+                '}';
     }
 }

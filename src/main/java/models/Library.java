@@ -4,6 +4,7 @@ import dao.AuthorDao;
 import dao.BookDao;
 import dao.DbAuthorDao;
 import dao.DbBookDao;
+import models.book.Author;
 import models.book.Book;
 import models.user.Client;
 import models.user.Librarian;
@@ -33,12 +34,12 @@ public class Library {
 
     public void initLibrary() throws SQLException {
         int option;
-            welcomeMenu();
-            option = scanner.nextInt();
-            doWelcomeMenu(option);
+        welcomeMenu();
+        option = scanner.nextInt();
+        doWelcomeMenu(option);
         do {
             if (client != null) {
-               clientLogic();
+                clientLogic();
             }
             if (librarian != null) {
                 //TODO librarian logic
@@ -61,7 +62,7 @@ public class Library {
 
 //------------------- CLIENT RELATED METHODS ---------------------------------------------------------------------------
 
-    private void clientLogic(){
+    private void clientLogic() throws SQLException {
         //TODO client logic
         clientMenu();
         int option;
@@ -70,7 +71,7 @@ public class Library {
             case 1:
                 bookListingMenu();
                 System.out.println("enter option");
-                option= scanner.nextInt();
+                option = scanner.nextInt();
                 listBooks(option);
                 break;
             case 2:
@@ -86,7 +87,7 @@ public class Library {
     private void clientMenu() {
         System.out.println("Client Menu");
         System.out.println("1 - Show books");
-        System.out.println("2 - Show borrowed history");
+        System.out.println("2 - Show borrow history");
         System.out.println("3 - Show current borrowed book");
         System.out.println("4 - Borrow book");
         System.out.println("5 - Return book");
@@ -123,14 +124,14 @@ public class Library {
         System.out.println("Please enter an option!");
     }
 
-    private void bookListingMenu(){
+    private void bookListingMenu() {
         System.out.println("Listing menu");
         System.out.println("1 - List books A-Z");
         System.out.println("2 - List books Z-A");
         System.out.println("3 - Return");
     }
 
-    private void searchMenu(){
+    private void searchMenu() {
         System.out.println("Search menu");
         System.out.println("1 - Search by title");
         System.out.println("2 - Search by author");
@@ -151,13 +152,11 @@ public class Library {
                 ResultSet resultSet = authService.getUser(connection, id, password);
                 if (authService.getClient(connection, resultSet) != null) {
                     client = authService.getClient(connection, resultSet);
-                    break;
                 } else if (authService.getLibrarian(connection, resultSet) != null) {
                     librarian = authService.getLibrarian(connection, resultSet);
-                    break;
                 }
                 tries--;
-            } while (tries > 0 && client == null || librarian == null);
+            } while (client == null && librarian == null);
         } else {
             System.out.println("Username could not be found! Please try again!");
         }
@@ -177,25 +176,35 @@ public class Library {
         }
     }
 
-    private void listBooks(int option){
-        switch (option){
+    private void listBooks(int option) throws SQLException {
+        switch (option) {
             case 1:
-                //A-Z
+                getBooks().forEach(System.out::println);
                 break;
             case 2:
                 //Z-A
                 break;
             case 3:
                 //return
-                if (client!=null) {
+                if (client != null) {
                     clientLogic();
-                }else {
+                } else {
                     librarianLogic();
                 }
                 break;
             default:
                 //default
         }
+    }
+
+    private List<Book> getBooks() throws SQLException {
+        List<Book> books = bookDao.findAll(connection);
+        for (Book book : books) {
+            List<Author> authorList = new ArrayList<>();
+            authorList.add(authorDao.findById(connection, book.getId()));
+            book.setAuthors(authorList);
+        }
+        return books;
     }
 
 }
