@@ -6,6 +6,7 @@ import dao.DbAuthorDao;
 import dao.DbBookDao;
 import models.book.Author;
 import models.book.Book;
+import models.book.Genre;
 import models.user.Client;
 import models.user.Librarian;
 import services.AuthService;
@@ -16,6 +17,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 
@@ -24,6 +26,7 @@ public class Library {
     private final Connection connection;
     private Client client;
     private Librarian librarian;
+    List<Book> bookList = new ArrayList<>();
     AuthService authService = new AuthServiceImpl();
     AuthorDao authorDao = new DbAuthorDao();
     BookDao bookDao = new DbBookDao();
@@ -179,10 +182,23 @@ public class Library {
     private void listBooks(int option) throws SQLException {
         switch (option) {
             case 1:
-                getBooks().forEach(System.out::println);
+                createBookAuthor();
+                bookList.sort(Comparator.comparing(Book::getBookName));
+                for (Book book : bookList) {
+                    System.out.print(book.getBookName()+" - ");
+                    for (Author author: book.getAuthors()) {
+                        System.out.print(author.getFirstName() + author.getLastName()+", ");
+                    }
+                    for (Genre genre: book.getGenres()){
+                        System.out.print(genre+", ");
+                    }
+                    System.out.println();
+                }
                 break;
             case 2:
-                //Z-A
+                createBookAuthor();
+                bookList.sort((book, t1) -> t1.getBookName().compareTo(book.getBookName()));
+                bookList.forEach(System.out::println);
                 break;
             case 3:
                 //return
@@ -197,14 +213,15 @@ public class Library {
         }
     }
 
-    private List<Book> getBooks() throws SQLException {
-        List<Book> books = bookDao.findAll(connection);
-        for (Book book : books) {
-            List<Author> authorList = new ArrayList<>();
-            authorList.add(authorDao.findById(connection, book.getId()));
-            book.setAuthors(authorList);
-        }
-        return books;
+    private void createBookAuthor() throws SQLException {
+        bookList = bookDao.findAll(connection);
+        bookList.forEach(book -> {
+            try {
+                book.setAuthors(authorDao.findByBookId(connection, book.getId()));
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
 }

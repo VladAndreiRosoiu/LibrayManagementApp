@@ -73,7 +73,7 @@ public class AuthServiceImpl implements AuthService {
                 String email = resultSet.getString("email");
                 List<Book> borrowedBooks = new ArrayList<>();
                 boolean isActive = resultSet.getBoolean("is_active");
-                return new Client(id,firstName,lastName,username,email,borrowedBooks, null,isActive);
+                return new Client(id, firstName, lastName, username, email, borrowedBooks, null, isActive);
             }
         }
         return null;

@@ -17,7 +17,7 @@ public class Author {
         this.lastName = lastName;
         this.description = description;
         this.birthDate = birthDate;
-        this.deathDate=deathDate;
+        this.deathDate = deathDate;
     }
 
     public int getId() {

@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DbAuthorDao implements AuthorDao {
@@ -17,12 +18,8 @@ public class DbAuthorDao implements AuthorDao {
     }
 
     @Override
-    public List<Author> findAll(Connection connection) throws SQLException {
-        return null;
-    }
-
-    @Override
-    public Author findById(Connection connection, int itemId) throws SQLException {
+    public List<Author> findByBookId(Connection connection, int itemId) throws SQLException {
+        List<Author> authorList = new ArrayList<>();
         String query = "SELECT id_author FROM libraryDB.book_author WHERE id_book = ?";
         PreparedStatement ps = connection.prepareStatement(query);
         ps.setString(1, String.valueOf(itemId));
@@ -40,9 +37,19 @@ public class DbAuthorDao implements AuthorDao {
                 String description = rs2.getString("aditional_info");
                 LocalDate birthDate = rs2.getDate("birth_date").toLocalDate();
                 //LocalDate deathDate = rs2.getDate("death_date").toLocalDate();
-                return new Author(idAut, firstName, lastName, description, birthDate, LocalDate.now());
+                authorList.add(new Author(idAut, firstName, lastName, description, birthDate, LocalDate.now()));
             }
         }
+        return authorList;
+    }
+
+    @Override
+    public List<Author> findAll(Connection connection) throws SQLException {
+        return null;
+    }
+
+    @Override
+    public Author findById(Connection connection, int itemId) throws SQLException {
         return null;
     }
 
