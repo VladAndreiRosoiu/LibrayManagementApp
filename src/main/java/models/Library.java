@@ -76,6 +76,14 @@ public class Library {
 //------------------- CLIENT MENUS && SUBMENUS -------------------------------------------------------------------------
 
     private void clientMenu() {
+        System.out.println("Client Menu");
+        System.out.println("1 - Show books");
+        System.out.println("2 - Show borrowed books");
+        System.out.println("3 - Show current borrowed book");
+        System.out.println("4 - Borrow book");
+        System.out.println("5 - Return book");
+        System.out.println("6 - Log out");
+        System.out.println("7 - Exit");
     }
 
     private List<Book> getClientBorrowedBooks(int id) throws SQLException {
