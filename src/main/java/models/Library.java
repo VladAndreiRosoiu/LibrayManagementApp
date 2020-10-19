@@ -1,9 +1,6 @@
 package models;
 
-import dao.AuthorDao;
-import dao.BookDao;
-import dao.DbAuthorDao;
-import dao.DbBookDao;
+import dao.*;
 import models.book.Author;
 import models.book.Book;
 import models.book.Genre;
@@ -30,6 +27,7 @@ public class Library {
     AuthService authService = new AuthServiceImpl();
     AuthorDao authorDao = new DbAuthorDao();
     BookDao bookDao = new DbBookDao();
+    GenreDao genreDao = new DbGenreDao();
 
     public Library(Connection connection) {
         this.connection = connection;
@@ -182,7 +180,7 @@ public class Library {
     private void listBooks(int option) throws SQLException {
         switch (option) {
             case 1:
-                createBookAuthor();
+                createBookAuthorGenre();
                 bookList.sort(Comparator.comparing(Book::getBookName));
                 for (Book book : bookList) {
                     System.out.print(book.getBookName()+" - ");
@@ -196,7 +194,7 @@ public class Library {
                 }
                 break;
             case 2:
-                createBookAuthor();
+                createBookAuthorGenre();
                 bookList.sort((book, t1) -> t1.getBookName().compareTo(book.getBookName()));
                 bookList.forEach(System.out::println);
                 break;
@@ -213,15 +211,15 @@ public class Library {
         }
     }
 
-    private void createBookAuthor() throws SQLException {
+    private void createBookAuthorGenre() throws SQLException {
         bookList = bookDao.findAll(connection);
         bookList.forEach(book -> {
             try {
                 book.setAuthors(authorDao.findByBookId(connection, book.getId()));
+                book.setGenres(genreDao.findGenreByBookId(connection,book.getId()));
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         });
     }
-
 }

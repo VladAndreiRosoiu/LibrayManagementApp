@@ -49,19 +49,6 @@ public class DbBookDao implements BookDao {
             int stock = rs.getInt("stock");
             List<Author> authorList = new ArrayList<>();
             List<Genre> genreList = new ArrayList<>();
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT id_genre FROM libraryDB.book_genre WHERE id_book = ?");
-            preparedStatement.setString(1, String.valueOf(id));
-            ResultSet resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()){
-                int idGenre = resultSet.getInt("id_genre");
-                PreparedStatement preparedStatement1 = connection.prepareStatement("SELECT genre_type FROM libraryDB.genre WHERE id = ?");
-                preparedStatement1.setString(1, String.valueOf(idGenre));
-                ResultSet resultSet1 = preparedStatement1.executeQuery();
-                while (resultSet1.next()){
-                    String genre = resultSet1.getString("genre_type").replace(" ", "_").toUpperCase();
-                    genreList.add(Genre.valueOf(genre));
-                }
-            }
             bookList.add(new Book(id, bookName, authorList, genreList, isbn, releaseDate, stock));
         }
         return bookList;
