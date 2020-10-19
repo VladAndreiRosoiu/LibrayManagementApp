@@ -104,6 +104,22 @@ public class Library {
         System.out.println("Please enter an option!");
     }
 
+    private void bookListingMenu(){
+        System.out.println("Listing menu");
+        System.out.println("1 - List books A-Z");
+        System.out.println("2 - List books Z-A");
+        System.out.println("3 - Return");
+    }
+
+    private void searchMenu(){
+        System.out.println("Search menu");
+        System.out.println("1 - Search by title");
+        System.out.println("2 - Search by author");
+        System.out.println("3 - Search by genre");
+        System.out.println("4 - Search by ISBN");
+        System.out.println("3 - Return");
+    }
+
 //------------------- CLIENT RELATED METHODS ---------------------------------------------------------------------------
 
 
