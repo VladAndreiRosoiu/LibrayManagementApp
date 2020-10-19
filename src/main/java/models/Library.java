@@ -41,20 +41,7 @@ public class Library {
                clientLogic();
             }
             if (librarian != null) {
-                //TODO librarian logic
-                librarianMenu();
-                option = scanner.nextInt();
-                switch (option) {
-                    case 1:
-                        //TODO
-                        break;
-                    case 2:
-                        //TODO
-                        //TODO
-                        break;
-                    default:
-                        librarianMenu();
-                }
+              librarianLogic();
             }
         } while (client != null || librarian != null);
     }
@@ -109,6 +96,21 @@ public class Library {
 //------------------- LIBRARIAN RELATED METHODS ------------------------------------------------------------------------
 
     private void librarianLogic() {
+        //TODO librarian logic
+        int option;
+        librarianMenu();
+        option = scanner.nextInt();
+        switch (option) {
+            case 1:
+                //TODO
+                break;
+            case 2:
+                //TODO
+                //TODO
+                break;
+            default:
+                librarianMenu();
+        }
     }
 
     private void librarianMenu() {
