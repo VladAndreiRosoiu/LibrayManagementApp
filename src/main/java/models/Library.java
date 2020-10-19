@@ -33,25 +33,12 @@ public class Library {
 
     public void initLibrary() throws SQLException {
         int option;
-        welcomeMenu();
-        option = scanner.nextInt();
-        doWelcomeMenu(option);
+            welcomeMenu();
+            option = scanner.nextInt();
+            doWelcomeMenu(option);
         do {
             if (client != null) {
-                //TODO client logic
-                clientMenu();
-                option = scanner.nextInt();
-                switch (option) {
-                    case 1:
-                        //TODO
-                        break;
-                    case 2:
-                        //TODO
-                        //TODO
-                        break;
-                    default:
-                        clientMenu();
-                }
+               clientLogic();
             }
             if (librarian != null) {
                 //TODO librarian logic
@@ -72,13 +59,34 @@ public class Library {
         } while (client != null || librarian != null);
     }
 
+//------------------- CLIENT RELATED METHODS ---------------------------------------------------------------------------
 
-//------------------- CLIENT MENUS && SUBMENUS -------------------------------------------------------------------------
+    private void clientLogic(){
+        //TODO client logic
+        clientMenu();
+        int option;
+        option = scanner.nextInt();
+        switch (option) {
+            case 1:
+                bookListingMenu();
+                System.out.println("enter option");
+                option= scanner.nextInt();
+                listBooks(option);
+                break;
+            case 2:
+                //TODO
+                //TODO
+                break;
+            default:
+                clientLogic();
+        }
+    }
+
 
     private void clientMenu() {
         System.out.println("Client Menu");
         System.out.println("1 - Show books");
-        System.out.println("2 - Show borrowed books");
+        System.out.println("2 - Show borrowed history");
         System.out.println("3 - Show current borrowed book");
         System.out.println("4 - Borrow book");
         System.out.println("5 - Return book");
@@ -98,12 +106,15 @@ public class Library {
         return borrowedBooks;
     }
 
-//------------------- LIBRARIAN MENUS && SUBMENUS ----------------------------------------------------------------------
+//------------------- LIBRARIAN RELATED METHODS ------------------------------------------------------------------------
+
+    private void librarianLogic() {
+    }
 
     private void librarianMenu() {
     }
 
-//------------------- PRINT METHODS ------------------------------------------------------------------------------------
+// ------------------- GENERAL USE METHODS -----------------------------------------------------------------------------
 
     private void welcomeMenu() {
         System.out.println("Welcome to library!");
@@ -127,14 +138,6 @@ public class Library {
         System.out.println("4 - Search by ISBN");
         System.out.println("3 - Return");
     }
-
-//------------------- CLIENT RELATED METHODS ---------------------------------------------------------------------------
-
-
-//------------------- LIBRARIAN RELATED METHODS ------------------------------------------------------------------------
-
-
-// ------------------- GENERAL USE METHODS -----------------------------------------------------------------------------
 
     private void doLogin() throws SQLException {
         System.out.println("Please enter username:");
@@ -171,6 +174,27 @@ public class Library {
                 break;
             default:
                 initLibrary();
+        }
+    }
+
+    private void listBooks(int option){
+        switch (option){
+            case 1:
+                //A-Z
+                break;
+            case 2:
+                //Z-A
+                break;
+            case 3:
+                //return
+                if (client!=null) {
+                    clientLogic();
+                }else {
+                    librarianLogic();
+                }
+                break;
+            default:
+                //default
         }
     }
 
