@@ -13,10 +13,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Scanner;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Library {
@@ -79,12 +77,15 @@ public class Library {
                 break;
             case 2:
                 //SEARCH BOOK
+                doSearchBook();
                 break;
             case 3:
                 //SHOW BORROW HISTORY
+                getClientBorrowHistory();
                 break;
             case 4:
                 //SHOW CURRENT BORROWED BOOK
+                getCurrentBorrowedBook();
                 break;
             case 5:
                 //BORROW BOOK
@@ -117,16 +118,36 @@ public class Library {
         System.out.println("8 - Exit");
     }
 
-    private List<Book> getClientBorrowedBooks(int id) throws SQLException {
-        List<Book> borrowedBooks = new ArrayList<>();
-        String query = "SELECT * FROM libraryDB.borrowed_book_user WHERE id_user = ?";
-        PreparedStatement ps = connection.prepareStatement(query);
-        ps.setString(1, String.valueOf(id));
-        ResultSet rs = ps.executeQuery();
-        while (rs.next()) {
-
+    private void getClientBorrowHistory() throws SQLException {
+        setBookAuthorGenre();
+        String query = "SELECT * FROM libraryDB.borrowed_book_user WHERE id_user = ? AND returned_on IS NOT NULL";
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setString(1, String.valueOf(client.getId()));
+        ResultSet resultSet = preparedStatement.executeQuery();
+        while (resultSet.next()) {
+            int bookId = resultSet.getInt("id_book");
+            LocalDate borrowDate = resultSet.getDate("borrowed_on").toLocalDate();
+            LocalDate returnDate = resultSet.getDate("returned_on").toLocalDate();
+            Optional<Book> bookOptional= bookList.stream().filter(book -> book.getId()==bookId).findAny();
+            bookOptional.ifPresent(book -> System.out.println(book + " borrowed on " + borrowDate + " returned on " + returnDate));
+            System.out.println();
         }
-        return borrowedBooks;
+    }
+
+    private Book getCurrentBorrowedBook() throws SQLException{
+        setBookAuthorGenre();
+        String query = "SELECT * FROM libraryDB.borrowed_book_user WHERE id_user = ? AND returned_on IS NULL";
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setString(1, String.valueOf(client.getId()));
+        ResultSet resultSet = preparedStatement.executeQuery();
+        while (resultSet.next()) {
+            int bookId = resultSet.getInt("id_book");
+            LocalDate borrowDate = resultSet.getDate("borrowed_on").toLocalDate();
+            Optional<Book> bookOptional= bookList.stream().filter(book -> book.getId()==bookId).findAny();
+            bookOptional.ifPresent(book -> System.out.println(book + " borrowed on " + borrowDate));
+            return bookOptional.orElse(null);
+        }
+        return null;
     }
 
 //------------------- LIBRARIAN RELATED METHODS ------------------------------------------------------------------------
@@ -299,6 +320,52 @@ public class Library {
                 .filter(genreObj -> genreObj.equals(Genre.valueOf(genre)))
                 .findAny()
                 .orElse(null);
+    }
+
+    private void doSearchBook()throws SQLException{
+        setBookAuthorGenre();
+        printSearchMenu();
+        int option = scanner.nextInt();
+        switch (option){
+            case 1:
+                //search by title
+                System.out.println("Title");
+                scanner.skip("\n");
+                String title = scanner.nextLine();
+                searchBookByTitle(title).forEach(System.out::println);
+                break;
+            case 2:
+                //search by author
+                System.out.println("First name");
+                String firstName = scanner.nextLine();
+                System.out.println("Last name");
+                String lastName = scanner.nextLine();
+                searchBookByAuthor(getAuthor(firstName,lastName)).forEach(System.out::println);
+                break;
+            case 3:
+                //search by genre
+                System.out.println("Genre");
+                String genre = scanner.nextLine().replace(" ", "_").toUpperCase();
+                searchByGenre(getGenre(genre)).forEach(System.out::println);
+                break;
+            case 4:
+                //search by isbn
+                System.out.println("ISBN");
+                long isbn = scanner.nextLong();
+                System.out.println(searchByIsbn(isbn));
+                break;
+            default:
+                doSearchBook();
+        }
+    }
+
+    private Book selectBook(List<Book> bookList){
+        for (int i = 0; i < bookList.size(); i++) {
+            System.out.println((i+1) +" - "+ bookList.get(i));
+        }
+        System.out.println("Enter choice");
+        int choice = scanner.nextInt();
+        return bookList.get(choice-1);
     }
 
 }
