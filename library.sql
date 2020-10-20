@@ -16,7 +16,7 @@ CREATE TABLE authors(
 id INT PRIMARY KEY AUTO_INCREMENT,
 first_name VARCHAR(255) NOT NULL,
 last_name VARCHAR(255) NOT NULL,
-aditional_info VARCHAR(1000),
+additional_info VARCHAR(1000),
 birth_date DATE NOT NULL,
 death_date DATE,
 CONSTRAINT author_cons UNIQUE (first_name, last_name, birth_date));
@@ -59,7 +59,7 @@ FOREIGN KEY (id_user) REFERENCES users(id),
 FOREIGN KEY (id_book) REFERENCES books(id)
 );
 
-INSERT INTO libraryDB.authors(first_name, last_name, aditional_info, birth_date )
+INSERT INTO libraryDB.authors(first_name, last_name, additional_info, birth_date )
 VALUES
 ('Naomi', 'Novik' , 'Naomi Novik is an American author of speculative fiction. Novik won both the Nebula Award for Best Novel and the Mythopoeic Fantasy Award in 2016 for her novel Uprooted.', '1973-04-30'),
 ('Roshani', 'Chokshi', 'Roshani Chokshi is an American children\' book author and a New York Times bestselling author.' , '1991-02-14'),

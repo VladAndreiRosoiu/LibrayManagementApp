@@ -16,13 +16,13 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public int getUserId(Connection connection, String username) throws SQLException {
-        String query = "SELECT id FROM libraryDB.users WHERE username = ?";
-        PreparedStatement ps = connection.prepareStatement(query);
-        ps.setString(1, username);
-        ResultSet rs = ps.executeQuery();
-        if (rs.next()) {
-            System.out.println(rs.getInt("id"));
-            return rs.getInt("id");
+        PreparedStatement preparedStatement = connection.
+                prepareStatement("SELECT id FROM libraryDB.users WHERE username = ?");
+        preparedStatement.setString(1, username);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        if (resultSet.next()) {
+            System.out.println(resultSet.getInt("id"));
+            return resultSet.getInt("id");
         }
         return 0;
     }
@@ -49,15 +49,13 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public ResultSet getUser(Connection connection, int id, String password) throws SQLException {
-        String query = "SELECT * FROM libraryDB.users WHERE id = ?";
-        PreparedStatement ps = connection.prepareStatement(query);
-        ps.setString(1, String.valueOf(id));
-        ResultSet rs = ps.executeQuery();
-        rs.next();
-        System.out.println(rs.getString("first_name"));
-        System.out.println(rs.getString("last_name"));
-        if (rs.getString("user_password").equals(getPassword(password))) {
-            return rs;
+        PreparedStatement preparedStatement = connection.
+                prepareStatement("SELECT * FROM libraryDB.users WHERE id = ?");
+        preparedStatement.setString(1, String.valueOf(id));
+        ResultSet resultSet = preparedStatement.executeQuery();
+        resultSet.next();
+        if (resultSet.getString("user_password").equals(getPassword(password))) {
+            return resultSet;
         }
         return null;
     }
@@ -73,7 +71,7 @@ public class AuthServiceImpl implements AuthService {
                 String email = resultSet.getString("email");
                 List<Book> borrowedBooks = new ArrayList<>();
                 boolean isActive = resultSet.getBoolean("is_active");
-                return new Client(id,firstName,lastName,username,email,borrowedBooks, null,isActive);
+                return new Client(id, firstName, lastName, username, email, borrowedBooks, null, isActive);
             }
         }
         return null;
