@@ -40,13 +40,13 @@ public class DbBookDao implements BookDao {
     public List<Book> findAll(Connection connection) throws SQLException {
         List<Book> bookList = new ArrayList<>();
         Statement stmt = connection.createStatement();
-        ResultSet rs = stmt.executeQuery("SELECT * from libraryDB.books");
-        while (rs.next()) {
-            int id = rs.getInt("id");
-            String bookName = rs.getString("book_name");
-            long isbn = rs.getLong("isbn");
-            LocalDate releaseDate = rs.getDate("release_date").toLocalDate();
-            int stock = rs.getInt("stock");
+        ResultSet resultSet = stmt.executeQuery("SELECT * FROM libraryDB.books");
+        while (resultSet.next()) {
+            int id = resultSet.getInt("id");
+            String bookName = resultSet.getString("book_name");
+            long isbn = resultSet.getLong("isbn");
+            LocalDate releaseDate = resultSet.getDate("release_date").toLocalDate();
+            int stock = resultSet.getInt("stock");
             List<Author> authorList = new ArrayList<>();
             List<Genre> genreList = new ArrayList<>();
             bookList.add(new Book(id, bookName, authorList, genreList, isbn, releaseDate, stock));

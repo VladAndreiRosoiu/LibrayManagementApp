@@ -1,11 +1,11 @@
 package dao;
 
+import models.book.Author;
+import models.book.Book;
 import models.book.Genre;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +31,14 @@ public class DbGenreDao implements GenreDao{
 
     @Override
     public List<Genre> findAll(Connection connection) throws SQLException {
-        return null;
+        List<Genre> genreList = new ArrayList<>();
+        Statement stmt = connection.createStatement();
+        ResultSet resultSet = stmt.executeQuery("SELECT * FROM libraryDB.genre");
+        while (resultSet.next()) {
+            String genre = resultSet.getString("genre_type").replace(" ", "_").toUpperCase();
+            genreList.add(Genre.valueOf(genre));
+        }
+        return genreList;
     }
 
     @Override

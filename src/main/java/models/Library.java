@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class Library {
     private final Scanner scanner = new Scanner(System.in);
@@ -35,7 +36,7 @@ public class Library {
 
     public void initLibrary() throws SQLException {
         int option;
-        welcomeMenu();
+        printWelcomeMenu();
         option = scanner.nextInt();
         doWelcomeMenu(option);
         do {
@@ -70,14 +71,33 @@ public class Library {
         option = scanner.nextInt();
         switch (option) {
             case 1:
-                bookListingMenu();
+                //SHOW AVAILABLE BOOKS IN LIBRARY
+                printBookListingMenu();
                 System.out.println("enter option");
                 option = scanner.nextInt();
                 listBooks(option);
                 break;
             case 2:
-                //TODO
-                //TODO
+                //SEARCH BOOK
+                break;
+            case 3:
+                //SHOW BORROW HISTORY
+                break;
+            case 4:
+                //SHOW CURRENT BORROWED BOOK
+                break;
+            case 5:
+                //BORROW BOOK
+                break;
+            case 6:
+                //RETURN BORROWED BOOK
+                break;
+            case 7:
+                //LOG OUT
+                break;
+            case 8:
+                //EXIT
+                System.exit(0);
                 break;
             default:
                 clientLogic();
@@ -88,12 +108,13 @@ public class Library {
     private void clientMenu() {
         System.out.println("Client Menu");
         System.out.println("1 - Show books");
-        System.out.println("2 - Show borrow history");
-        System.out.println("3 - Show current borrowed book");
-        System.out.println("4 - Borrow book");
-        System.out.println("5 - Return book");
-        System.out.println("6 - Log out");
-        System.out.println("7 - Exit");
+        System.out.println("2 - Search book");
+        System.out.println("3 - Show borrow history");
+        System.out.println("4 - Show current borrowed book");
+        System.out.println("5 - Borrow book");
+        System.out.println("6 - Return book");
+        System.out.println("7 - Log out");
+        System.out.println("8 - Exit");
     }
 
     private List<Book> getClientBorrowedBooks(int id) throws SQLException {
@@ -118,21 +139,21 @@ public class Library {
 
 // ------------------- GENERAL USE METHODS -----------------------------------------------------------------------------
 
-    private void welcomeMenu() {
+    private void printWelcomeMenu() {
         System.out.println("Welcome to library!");
         System.out.println("1 - Sign in");
         System.out.println("2 - Sign up");
         System.out.println("Please enter an option!");
     }
 
-    private void bookListingMenu() {
+    private void printBookListingMenu() {
         System.out.println("Listing menu");
         System.out.println("1 - List books A-Z");
         System.out.println("2 - List books Z-A");
         System.out.println("3 - Return");
     }
 
-    private void searchMenu() {
+    private void printSearchMenu() {
         System.out.println("Search menu");
         System.out.println("1 - Search by title");
         System.out.println("2 - Search by author");
@@ -157,7 +178,11 @@ public class Library {
                     librarian = authService.getLibrarian(connection, resultSet);
                 }
                 tries--;
-            } while (client == null && librarian == null);
+                if (tries == 0) {
+                    System.out.println("Exceeded maximum tries number!");
+                    break;
+                }
+            } while (client == null && librarian == null && tries > 0);
         } else {
             System.out.println("Username could not be found! Please try again!");
         }
@@ -169,7 +194,7 @@ public class Library {
                 doLogin();
                 break;
             case 2:
-                //TODO -- register new models.user
+                //TODO -- register new client
                 System.out.println("Work in progress!");
                 break;
             default:
@@ -178,23 +203,22 @@ public class Library {
     }
 
     private void listBooks(int option) throws SQLException {
+        setBookAuthorGenre();
         switch (option) {
             case 1:
-                createBookAuthorGenre();
                 bookList.sort(Comparator.comparing(Book::getBookName));
                 for (Book book : bookList) {
-                    System.out.print(book.getBookName()+" - ");
-                    for (Author author: book.getAuthors()) {
-                        System.out.print(author.getFirstName() + author.getLastName()+", ");
+                    System.out.print(book.getBookName() + " - ");
+                    for (Author author : book.getAuthors()) {
+                        System.out.print(author.getFirstName() + " " + author.getLastName() + " - ");
                     }
-                    for (Genre genre: book.getGenres()){
-                        System.out.print(genre+", ");
+                    for (Genre genre : book.getGenres()) {
+                        System.out.print(genre + ", ");
                     }
                     System.out.println();
                 }
                 break;
             case 2:
-                createBookAuthorGenre();
                 bookList.sort((book, t1) -> t1.getBookName().compareTo(book.getBookName()));
                 bookList.forEach(System.out::println);
                 break;
@@ -211,15 +235,70 @@ public class Library {
         }
     }
 
-    private void createBookAuthorGenre() throws SQLException {
+    private void setBookAuthorGenre() throws SQLException {
         bookList = bookDao.findAll(connection);
         bookList.forEach(book -> {
             try {
                 book.setAuthors(authorDao.findByBookId(connection, book.getId()));
-                book.setGenres(genreDao.findGenreByBookId(connection,book.getId()));
+                book.setGenres(genreDao.findGenreByBookId(connection, book.getId()));
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         });
     }
+
+    private List<Book> searchBookByTitle(String title) {
+        return bookList.stream().
+                filter(book -> book.getBookName()
+                        .toLowerCase()
+                        .contains(title.toLowerCase()))
+                .collect(Collectors.toList());
+    }
+
+    private List<Book> searchBookByAuthor(Author author) {
+        return bookList.stream().
+                filter(book -> book.getAuthors().contains(author))
+                .collect(Collectors.toList());
+    }
+
+    private List<Book> searchByGenre(Genre genre) {
+        return bookList.stream()
+                .filter(book -> book.getGenres().contains(genre))
+                .collect(Collectors.toList());
+    }
+
+    private Book searchByIsbn(long isbn) {
+//        Optional <Book> bookOptional =  bookList.stream().filter(book -> book.getIsbn()==isbn).findAny();
+//        if (bookOptional.isPresent()){
+//            return bookOptional.get();
+//
+//        }else {
+//            System.out.println("Book not found!");
+//            return null;
+//        }
+        return bookList.stream().filter(book -> book.getIsbn() == isbn).findAny().orElse(null);
+    }
+
+    private Author getAuthor(String firstName, String lastName) throws SQLException {
+//        Optional<Author> authorOptional = authorDao.findAll(connection).stream()
+//                .filter(author -> author.getFirstName().equalsIgnoreCase(firstName) &&
+//                        author.getLastName().equalsIgnoreCase(lastName))
+//                .findAny();
+        return authorDao.findAll(connection).stream()
+                .filter(author -> author.getFirstName().equalsIgnoreCase(firstName) &&
+                        author.getLastName().equalsIgnoreCase(lastName))
+                .findAny()
+                .orElse(null);
+    }
+
+    private Genre getGenre(String genre) throws SQLException {
+//        Optional<Genre> genreOptional = genreDao.findAll(connection).stream()
+//                .filter(genreObj -> genreObj.equals(Genre.valueOf(genre)))
+//                .findAny();
+        return genreDao.findAll(connection).stream()
+                .filter(genreObj -> genreObj.equals(Genre.valueOf(genre)))
+                .findAny()
+                .orElse(null);
+    }
+
 }
