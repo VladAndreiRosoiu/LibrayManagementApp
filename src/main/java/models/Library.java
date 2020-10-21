@@ -42,7 +42,7 @@ public class Library {
                 clientLogic();
             }
             if (librarian != null) {
-              librarianLogic();
+                librarianLogic();
             }
         } while (client != null || librarian != null);
     }
@@ -76,9 +76,13 @@ public class Library {
                 break;
             case 5:
                 //BORROW BOOK
+                System.out.println("ISBN");
+                long isbn= scanner.nextLong();
+                borrowBook(searchByIsbn(isbn));
                 break;
             case 6:
                 //RETURN BORROWED BOOK
+                returnBook(Objects.requireNonNull(getCurrentBorrowedBook()));
                 break;
             case 7:
                 //LOG OUT
@@ -115,13 +119,13 @@ public class Library {
             int bookId = resultSet.getInt("id_book");
             LocalDate borrowDate = resultSet.getDate("borrowed_on").toLocalDate();
             LocalDate returnDate = resultSet.getDate("returned_on").toLocalDate();
-            Optional<Book> bookOptional= bookList.stream().filter(book -> book.getId()==bookId).findAny();
+            Optional<Book> bookOptional = bookList.stream().filter(book -> book.getId() == bookId).findAny();
             bookOptional.ifPresent(book -> System.out.println(book + " borrowed on " + borrowDate + " returned on " + returnDate));
             System.out.println();
         }
     }
 
-    private Book getCurrentBorrowedBook() throws SQLException{
+    private Book getCurrentBorrowedBook() throws SQLException {
         setBookAuthorGenre();
         String query = "SELECT * FROM libraryDB.borrowed_book_user WHERE id_user = ? AND returned_on IS NULL";
         PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -130,11 +134,47 @@ public class Library {
         while (resultSet.next()) {
             int bookId = resultSet.getInt("id_book");
             LocalDate borrowDate = resultSet.getDate("borrowed_on").toLocalDate();
-            Optional<Book> bookOptional= bookList.stream().filter(book -> book.getId()==bookId).findAny();
+            Optional<Book> bookOptional = bookList.stream().filter(book -> book.getId() == bookId).findAny();
             bookOptional.ifPresent(book -> System.out.println(book + " borrowed on " + borrowDate));
             return bookOptional.orElse(null);
         }
         return null;
+    }
+
+    private void borrowBook(Book book) throws SQLException {
+        String borrowBookQuery = "INSERT into libraryDB.borrowed_book_user(borrowed_on, id_user, id_book) VALUES (CURDATE(),?,?);";
+        PreparedStatement pStmtBorrowBook = connection.prepareStatement(borrowBookQuery);
+        pStmtBorrowBook.setString(1, String.valueOf(client.getId()));
+        pStmtBorrowBook.setString(2, String.valueOf(book.getId()));
+        pStmtBorrowBook.executeUpdate();
+
+        String updateBooks = "UPDATE libraryDB.books\n" +
+                "SET stock = (stock-1)\n" +
+                "WHERE id=?;";
+        PreparedStatement pStmtUpdateBook = connection.prepareStatement(updateBooks);
+        pStmtUpdateBook.setString(1, String.valueOf(book.getId()));
+        pStmtUpdateBook.executeUpdate();
+
+        setBookAuthorGenre();
+    }
+
+    private void returnBook(Book book) throws SQLException {
+        String returnBookQuery = "UPDATE libraryDB.borrowed_book_user\n" +
+                "SET returned_on=CURDATE()\n" +
+                "WHERE id_user = ? AND id_book = ?;";
+        PreparedStatement pStmtReturnBook = connection.prepareStatement(returnBookQuery);
+        pStmtReturnBook.setString(1, String.valueOf(client.getId()));
+        pStmtReturnBook.setString(2, String.valueOf(book.getId()));
+        pStmtReturnBook.executeUpdate();
+
+        String updateBooks = "UPDATE libraryDB.books\n" +
+                "SET stock = (stock+1)\n" +
+                "WHERE id=?;";
+        PreparedStatement pStmtUpdateBook = connection.prepareStatement(updateBooks);
+        pStmtUpdateBook.setString(1, String.valueOf(book.getId()));
+        pStmtUpdateBook.executeUpdate();
+
+        setBookAuthorGenre();
     }
 
 //------------------- LIBRARIAN RELATED METHODS ------------------------------------------------------------------------
@@ -232,6 +272,8 @@ public class Library {
                 bookList.sort(Comparator.comparing(Book::getBookName));
                 for (Book book : bookList) {
                     System.out.print(book.getBookName() + " - ");
+                    System.out.println(" - stock : " + book.getStock() + " ");
+                    System.out.println(" ISBN - " + book.getIsbn() + " - ");
                     for (Author author : book.getAuthors()) {
                         System.out.print(author.getFirstName() + " " + author.getLastName() + " - ");
                     }
@@ -291,22 +333,10 @@ public class Library {
     }
 
     private Book searchByIsbn(long isbn) {
-//        Optional <Book> bookOptional =  bookList.stream().filter(book -> book.getIsbn()==isbn).findAny();
-//        if (bookOptional.isPresent()){
-//            return bookOptional.get();
-//
-//        }else {
-//            System.out.println("Book not found!");
-//            return null;
-//        }
         return bookList.stream().filter(book -> book.getIsbn() == isbn).findAny().orElse(null);
     }
 
     private Author getAuthor(String firstName, String lastName) throws SQLException {
-//        Optional<Author> authorOptional = authorDao.findAll(connection).stream()
-//                .filter(author -> author.getFirstName().equalsIgnoreCase(firstName) &&
-//                        author.getLastName().equalsIgnoreCase(lastName))
-//                .findAny();
         return authorDao.findAll(connection).stream()
                 .filter(author -> author.getFirstName().equalsIgnoreCase(firstName) &&
                         author.getLastName().equalsIgnoreCase(lastName))
@@ -315,20 +345,17 @@ public class Library {
     }
 
     private Genre getGenre(String genre) throws SQLException {
-//        Optional<Genre> genreOptional = genreDao.findAll(connection).stream()
-//                .filter(genreObj -> genreObj.equals(Genre.valueOf(genre)))
-//                .findAny();
         return genreDao.findAll(connection).stream()
                 .filter(genreObj -> genreObj.equals(Genre.valueOf(genre)))
                 .findAny()
                 .orElse(null);
     }
 
-    private void doSearchBook()throws SQLException{
+    private void doSearchBook() throws SQLException {
         setBookAuthorGenre();
         printSearchMenu();
         int option = scanner.nextInt();
-        switch (option){
+        switch (option) {
             case 1:
                 //search by title
                 System.out.println("Title");
@@ -342,11 +369,12 @@ public class Library {
                 String firstName = scanner.nextLine();
                 System.out.println("Last name");
                 String lastName = scanner.nextLine();
-                searchBookByAuthor(getAuthor(firstName,lastName)).forEach(System.out::println);
+                searchBookByAuthor(getAuthor(firstName, lastName)).forEach(System.out::println);
                 break;
             case 3:
                 //search by genre
                 System.out.println("Genre");
+                scanner.skip("\n");
                 String genre = scanner.nextLine().replace(" ", "_").toUpperCase();
                 searchByGenre(getGenre(genre)).forEach(System.out::println);
                 break;
@@ -361,13 +389,13 @@ public class Library {
         }
     }
 
-    private Book selectBook(List<Book> bookList){
+    private Book selectBook(List<Book> bookList) {
         for (int i = 0; i < bookList.size(); i++) {
-            System.out.println((i+1) +" - "+ bookList.get(i));
+            System.out.println((i + 1) + " - " + bookList.get(i));
         }
         System.out.println("Enter choice");
         int choice = scanner.nextInt();
-        return bookList.get(choice-1);
+        return bookList.get(choice - 1);
     }
 
 }
