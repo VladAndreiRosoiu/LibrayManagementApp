@@ -10,11 +10,11 @@ import java.util.List;
 
 public interface BorrowReturnService {
 
-    void borrowBook(Book book, Connection connection, Client client) throws SQLException;
+    void borrowBook(Book book, Client client, Connection connection) throws SQLException;
 
-    void returnBook(Book book, Connection connection, Client client) throws SQLException;
+    void returnBook(Book book, Client client, Connection connection) throws SQLException;
 
-    Book getCurrentBorrowedBook(Client client, List<Book> bookList, Connection connection) throws SQLException;
+    BorrowedBook getCurrentBorrowedBook(Client client, List<Book> bookList, Connection connection) throws SQLException;
 
-    List<BorrowedBook> getBorrowHistory(Client client, Connection connection) throws SQLException;
+    List<BorrowedBook> getBorrowHistory(Client client, List<Book> bookList, Connection connection) throws SQLException;
 }

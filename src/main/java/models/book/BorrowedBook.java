@@ -8,6 +8,11 @@ public class BorrowedBook {
     private LocalDate borrowedOn;
     private LocalDate returnedOn;
 
+    public BorrowedBook(Book book, LocalDate borrowedOn) {
+        this.book = book;
+        this.borrowedOn = borrowedOn;
+    }
+
     public BorrowedBook(Book book, LocalDate borrowedOn, LocalDate returnedOn) {
         this.book = book;
         this.borrowedOn = borrowedOn;

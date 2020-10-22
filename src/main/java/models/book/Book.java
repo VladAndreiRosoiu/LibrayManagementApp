@@ -12,6 +12,8 @@ public class Book {
     private LocalDate releaseDate;
     private int stock;
 
+
+
     public Book(int id, String bookName, List<Author> authors, List<Genre> genres, long isbn, LocalDate releaseDate, int stock) {
         this.id = id;
         this.bookName = bookName;

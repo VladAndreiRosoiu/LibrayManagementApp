@@ -9,11 +9,12 @@ import models.user.Librarian;
 import services.*;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Scanner;
 
 public class Library {
     private final Scanner scanner = new Scanner(System.in);
@@ -39,6 +40,7 @@ public class Library {
         doWelcomeMenu(option);
         do {
             if (client != null) {
+                setClientProperties();
                 clientLogic();
             }
             if (librarian != null) {
@@ -68,24 +70,34 @@ public class Library {
                 break;
             case 3:
                 //SHOW BORROW HISTORY
-                getClientBorrowHistory();
+                client.getBorrowedBooks()
+                        .forEach(borrowedBook -> System.out.println(borrowedBook.getBook().getBookName() +
+                                " borrowed on "+ borrowedBook.getBorrowedOn()));
                 break;
             case 4:
                 //SHOW CURRENT BORROWED BOOK
-                System.out.println(borrowReturnService.getCurrentBorrowedBook(client, bookList, connection));
+                System.out.println(client.getCurrentBorrowedBook().getBook().getBookName() +
+                        " borrowed on " + client.getCurrentBorrowedBook().getBorrowedOn());
                 break;
             case 5:
                 //BORROW BOOK
-                System.out.println("ISBN");
-                long isbn = scanner.nextLong();
-                borrowReturnService.borrowBook(searchService.searchByIsbn(isbn, bookList), connection, client);
+                if (client.getCurrentBorrowedBook() == null){
+                    System.out.println("ISBN");
+                    long isbn = scanner.nextLong();
+                    borrowReturnService.borrowBook(searchService.searchByIsbn(isbn, bookList),client, connection);
+                }else {
+                    System.out.println("please first return your borrowed book");
+                    System.out.println(client.getCurrentBorrowedBook().getBook().getBookName());
+                }
                 break;
             case 6:
                 //RETURN BORROWED BOOK
-                borrowReturnService.returnBook(borrowReturnService.getCurrentBorrowedBook(client, bookList, connection), connection, client);
+                borrowReturnService.returnBook(borrowReturnService
+                        .getCurrentBorrowedBook(client,bookList,connection).getBook(),client,connection);
                 break;
             case 7:
                 //LOG OUT
+                client = null;
                 break;
             case 8:
                 //EXIT
@@ -95,7 +107,6 @@ public class Library {
                 clientLogic();
         }
     }
-
 
     private void clientMenu() {
         System.out.println("Client Menu");
@@ -109,20 +120,10 @@ public class Library {
         System.out.println("8 - Exit");
     }
 
-    private void getClientBorrowHistory() throws SQLException {
+    private void setClientProperties() throws SQLException{
         setBookAuthorGenre();
-        String query = "SELECT * FROM libraryDB.borrowed_book_user WHERE id_user = ? AND returned_on IS NOT NULL";
-        PreparedStatement preparedStatement = connection.prepareStatement(query);
-        preparedStatement.setString(1, String.valueOf(client.getId()));
-        ResultSet resultSet = preparedStatement.executeQuery();
-        while (resultSet.next()) {
-            int bookId = resultSet.getInt("id_book");
-            LocalDate borrowDate = resultSet.getDate("borrowed_on").toLocalDate();
-            LocalDate returnDate = resultSet.getDate("returned_on").toLocalDate();
-            Optional<Book> bookOptional = bookList.stream().filter(book -> book.getId() == bookId).findAny();
-            bookOptional.ifPresent(book -> System.out.println(book + " borrowed on " + borrowDate + " returned on " + returnDate));
-            System.out.println();
-        }
+        client.setBorrowedBooks(borrowReturnService.getBorrowHistory(client,bookList,connection));
+        client.setCurrentBorrowedBook(borrowReturnService.getCurrentBorrowedBook(client,bookList,connection));
     }
 
 //------------------- LIBRARIAN RELATED METHODS ------------------------------------------------------------------------
@@ -214,7 +215,6 @@ public class Library {
     }
 
     private void listBooks(int option) throws SQLException {
-        setBookAuthorGenre();
         switch (option) {
             case 1:
                 bookList.sort(Comparator.comparing(Book::getBookName));
@@ -261,7 +261,6 @@ public class Library {
     }
 
     private void doSearchBook() throws SQLException {
-        setBookAuthorGenre();
         printSearchMenu();
         int option = scanner.nextInt();
         switch (option) {

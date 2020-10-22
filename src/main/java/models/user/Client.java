@@ -8,21 +8,21 @@ import java.util.List;
 public class Client extends User {
 
     private List<BorrowedBook> borrowedBooks;
-    private Book currentBorrowedBook;
+    private BorrowedBook currentBorrowedBook;
     private boolean isActive;
 
-    public Client(int id, String firstName, String lastName, String user, String email, List<BorrowedBook> borrowedBooks, Book currentBorrowedBook, boolean isActive) {
+    public Client(int id, String firstName, String lastName, String user, String email, List<BorrowedBook> borrowedBooks, BorrowedBook currentBorrowedBook, boolean isActive) {
         super(id, firstName, lastName, user, email, UserType.CLIENT);
         this.borrowedBooks = borrowedBooks;
         this.currentBorrowedBook = currentBorrowedBook;
         this.isActive = isActive;
     }
 
-    public Book getCurrentBorrowedBook() {
+    public BorrowedBook getCurrentBorrowedBook() {
         return currentBorrowedBook;
     }
 
-    public void setCurrentBorrowedBook(Book currentBorrowedBook) {
+    public void setCurrentBorrowedBook(BorrowedBook currentBorrowedBook) {
         this.currentBorrowedBook = currentBorrowedBook;
     }
 
