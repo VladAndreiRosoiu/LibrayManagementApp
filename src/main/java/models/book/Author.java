@@ -11,6 +11,11 @@ public class Author {
     private LocalDate birthDate;
     private LocalDate deathDate;
 
+    public Author(String firstName, String lastName) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
     public Author(int id, String firstName, String lastName, String description, LocalDate birthDate, LocalDate deathDate) {
         this.id = id;
         this.firstName = firstName;

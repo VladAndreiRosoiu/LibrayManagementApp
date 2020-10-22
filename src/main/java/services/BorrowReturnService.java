@@ -2,6 +2,7 @@ package services;
 
 import models.book.Book;
 import models.book.BorrowedBook;
+import models.book.BorrowedBookByClient;
 import models.user.Client;
 
 import java.sql.Connection;
@@ -17,4 +18,5 @@ public interface BorrowReturnService {
     BorrowedBook getCurrentBorrowedBook(Client client, List<Book> bookList, Connection connection) throws SQLException;
 
     List<BorrowedBook> getBorrowHistory(Client client, List<Book> bookList, Connection connection) throws SQLException;
+
 }

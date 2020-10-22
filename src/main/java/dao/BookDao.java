@@ -11,7 +11,7 @@ import java.util.List;
 public interface BookDao extends EntityDao<Book> {
     Book findByIsbn(Connection connection, long isbn) throws SQLException;
 
-    Book findByName(Connection connection, String name) throws SQLException;
+    List<Book> findByTitle(Connection connection, String name) throws SQLException;
 
     List<Book> findByAuthor(Connection connection, Author author) throws SQLException;
 

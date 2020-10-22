@@ -8,11 +8,15 @@ public class Book {
     private String bookName;
     private List<Author> authors;
     private List<Genre> genres;
+    private Author author;
     private long isbn;
     private LocalDate releaseDate;
     private int stock;
 
-
+    public Book(String bookName, List<Author> authors) {
+        this.bookName = bookName;
+        this.authors = authors;
+    }
 
     public Book(int id, String bookName, List<Author> authors, List<Genre> genres, long isbn, LocalDate releaseDate, int stock) {
         this.id = id;
