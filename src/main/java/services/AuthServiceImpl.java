@@ -1,6 +1,6 @@
 package services;
 
-import models.book.Book;
+import models.book.BorrowedBook;
 import models.user.Client;
 import models.user.Librarian;
 import models.user.UserType;
@@ -69,7 +69,7 @@ public class AuthServiceImpl implements AuthService {
                 String lastName = resultSet.getString("last_name");
                 String username = resultSet.getString("username");
                 String email = resultSet.getString("email");
-                List<Book> borrowedBooks = new ArrayList<>();
+                List<BorrowedBook> borrowedBooks = new ArrayList<>();
                 boolean isActive = resultSet.getBoolean("is_active");
                 return new Client(id, firstName, lastName, username, email, borrowedBooks, null, isActive);
             }

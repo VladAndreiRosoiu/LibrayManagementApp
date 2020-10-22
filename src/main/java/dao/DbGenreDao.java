@@ -1,27 +1,24 @@
 package dao;
 
-import models.book.Author;
-import models.book.Book;
 import models.book.Genre;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DbGenreDao implements GenreDao{
+public class DbGenreDao implements GenreDao {
     @Override
     public List<Genre> findGenreByBookId(Connection connection, int bookId) throws SQLException {
         List<Genre> genreList = new ArrayList<>();
         PreparedStatement preparedStatement = connection.prepareStatement("SELECT id_genre FROM libraryDB.book_genre WHERE id_book = ?");
         preparedStatement.setString(1, String.valueOf(bookId));
         ResultSet resultSet = preparedStatement.executeQuery();
-        while (resultSet.next()){
+        while (resultSet.next()) {
             int idGenre = resultSet.getInt("id_genre");
             PreparedStatement preparedStatement1 = connection.prepareStatement("SELECT genre_type FROM libraryDB.genre WHERE id = ?");
             preparedStatement1.setString(1, String.valueOf(idGenre));
             ResultSet resultSet1 = preparedStatement1.executeQuery();
-            while (resultSet1.next()){
+            while (resultSet1.next()) {
                 String genre = resultSet1.getString("genre_type").replace(" ", "_").toUpperCase();
                 genreList.add(Genre.valueOf(genre));
             }

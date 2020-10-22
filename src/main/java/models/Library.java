@@ -6,8 +6,7 @@ import models.book.Book;
 import models.book.Genre;
 import models.user.Client;
 import models.user.Librarian;
-import services.AuthService;
-import services.AuthServiceImpl;
+import services.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -15,7 +14,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Library {
     private final Scanner scanner = new Scanner(System.in);
@@ -24,6 +22,8 @@ public class Library {
     private Librarian librarian;
     List<Book> bookList = new ArrayList<>();
     AuthService authService = new AuthServiceImpl();
+    SearchService searchService = new SearchServiceImpl();
+    BorrowReturnService borrowReturnService = new BorrowReturnServiceImpl();
     AuthorDao authorDao = new DbAuthorDao();
     BookDao bookDao = new DbBookDao();
     GenreDao genreDao = new DbGenreDao();
@@ -72,17 +72,17 @@ public class Library {
                 break;
             case 4:
                 //SHOW CURRENT BORROWED BOOK
-                getCurrentBorrowedBook();
+                System.out.println(borrowReturnService.getCurrentBorrowedBook(client, bookList, connection));
                 break;
             case 5:
                 //BORROW BOOK
                 System.out.println("ISBN");
-                long isbn= scanner.nextLong();
-                borrowBook(searchByIsbn(isbn));
+                long isbn = scanner.nextLong();
+                borrowReturnService.borrowBook(searchService.searchByIsbn(isbn, bookList), connection, client);
                 break;
             case 6:
                 //RETURN BORROWED BOOK
-                returnBook(Objects.requireNonNull(getCurrentBorrowedBook()));
+                borrowReturnService.returnBook(borrowReturnService.getCurrentBorrowedBook(client, bookList, connection), connection, client);
                 break;
             case 7:
                 //LOG OUT
@@ -123,58 +123,6 @@ public class Library {
             bookOptional.ifPresent(book -> System.out.println(book + " borrowed on " + borrowDate + " returned on " + returnDate));
             System.out.println();
         }
-    }
-
-    private Book getCurrentBorrowedBook() throws SQLException {
-        setBookAuthorGenre();
-        String query = "SELECT * FROM libraryDB.borrowed_book_user WHERE id_user = ? AND returned_on IS NULL";
-        PreparedStatement preparedStatement = connection.prepareStatement(query);
-        preparedStatement.setString(1, String.valueOf(client.getId()));
-        ResultSet resultSet = preparedStatement.executeQuery();
-        while (resultSet.next()) {
-            int bookId = resultSet.getInt("id_book");
-            LocalDate borrowDate = resultSet.getDate("borrowed_on").toLocalDate();
-            Optional<Book> bookOptional = bookList.stream().filter(book -> book.getId() == bookId).findAny();
-            bookOptional.ifPresent(book -> System.out.println(book + " borrowed on " + borrowDate));
-            return bookOptional.orElse(null);
-        }
-        return null;
-    }
-
-    private void borrowBook(Book book) throws SQLException {
-        String borrowBookQuery = "INSERT into libraryDB.borrowed_book_user(borrowed_on, id_user, id_book) VALUES (CURDATE(),?,?);";
-        PreparedStatement pStmtBorrowBook = connection.prepareStatement(borrowBookQuery);
-        pStmtBorrowBook.setString(1, String.valueOf(client.getId()));
-        pStmtBorrowBook.setString(2, String.valueOf(book.getId()));
-        pStmtBorrowBook.executeUpdate();
-
-        String updateBooks = "UPDATE libraryDB.books\n" +
-                "SET stock = (stock-1)\n" +
-                "WHERE id=?;";
-        PreparedStatement pStmtUpdateBook = connection.prepareStatement(updateBooks);
-        pStmtUpdateBook.setString(1, String.valueOf(book.getId()));
-        pStmtUpdateBook.executeUpdate();
-
-        setBookAuthorGenre();
-    }
-
-    private void returnBook(Book book) throws SQLException {
-        String returnBookQuery = "UPDATE libraryDB.borrowed_book_user\n" +
-                "SET returned_on=CURDATE()\n" +
-                "WHERE id_user = ? AND id_book = ?;";
-        PreparedStatement pStmtReturnBook = connection.prepareStatement(returnBookQuery);
-        pStmtReturnBook.setString(1, String.valueOf(client.getId()));
-        pStmtReturnBook.setString(2, String.valueOf(book.getId()));
-        pStmtReturnBook.executeUpdate();
-
-        String updateBooks = "UPDATE libraryDB.books\n" +
-                "SET stock = (stock+1)\n" +
-                "WHERE id=?;";
-        PreparedStatement pStmtUpdateBook = connection.prepareStatement(updateBooks);
-        pStmtUpdateBook.setString(1, String.valueOf(book.getId()));
-        pStmtUpdateBook.executeUpdate();
-
-        setBookAuthorGenre();
     }
 
 //------------------- LIBRARIAN RELATED METHODS ------------------------------------------------------------------------
@@ -312,45 +260,6 @@ public class Library {
         });
     }
 
-    private List<Book> searchBookByTitle(String title) {
-        return bookList.stream().
-                filter(book -> book.getBookName()
-                        .toLowerCase()
-                        .contains(title.toLowerCase()))
-                .collect(Collectors.toList());
-    }
-
-    private List<Book> searchBookByAuthor(Author author) {
-        return bookList.stream().
-                filter(book -> book.getAuthors().contains(author))
-                .collect(Collectors.toList());
-    }
-
-    private List<Book> searchByGenre(Genre genre) {
-        return bookList.stream()
-                .filter(book -> book.getGenres().contains(genre))
-                .collect(Collectors.toList());
-    }
-
-    private Book searchByIsbn(long isbn) {
-        return bookList.stream().filter(book -> book.getIsbn() == isbn).findAny().orElse(null);
-    }
-
-    private Author getAuthor(String firstName, String lastName) throws SQLException {
-        return authorDao.findAll(connection).stream()
-                .filter(author -> author.getFirstName().equalsIgnoreCase(firstName) &&
-                        author.getLastName().equalsIgnoreCase(lastName))
-                .findAny()
-                .orElse(null);
-    }
-
-    private Genre getGenre(String genre) throws SQLException {
-        return genreDao.findAll(connection).stream()
-                .filter(genreObj -> genreObj.equals(Genre.valueOf(genre)))
-                .findAny()
-                .orElse(null);
-    }
-
     private void doSearchBook() throws SQLException {
         setBookAuthorGenre();
         printSearchMenu();
@@ -361,7 +270,7 @@ public class Library {
                 System.out.println("Title");
                 scanner.skip("\n");
                 String title = scanner.nextLine();
-                searchBookByTitle(title).forEach(System.out::println);
+                searchService.searchByTitle(title, bookList).forEach(System.out::println);
                 break;
             case 2:
                 //search by author
@@ -369,20 +278,21 @@ public class Library {
                 String firstName = scanner.nextLine();
                 System.out.println("Last name");
                 String lastName = scanner.nextLine();
-                searchBookByAuthor(getAuthor(firstName, lastName)).forEach(System.out::println);
+                searchService.searchByAuthor(searchService.getAuthor(firstName, lastName, authorDao.findAll(connection)), bookList)
+                        .forEach(System.out::println);
                 break;
             case 3:
                 //search by genre
                 System.out.println("Genre");
                 scanner.skip("\n");
                 String genre = scanner.nextLine().replace(" ", "_").toUpperCase();
-                searchByGenre(getGenre(genre)).forEach(System.out::println);
+                searchService.searchByGenre(searchService.getGenre(genre, genreDao.findAll(connection)), bookList).forEach(System.out::println);
                 break;
             case 4:
                 //search by isbn
                 System.out.println("ISBN");
                 long isbn = scanner.nextLong();
-                System.out.println(searchByIsbn(isbn));
+                searchService.searchByIsbn(isbn, bookList);
                 break;
             default:
                 doSearchBook();

@@ -45,7 +45,7 @@ public class DbAuthorDao implements AuthorDao {
         List<Author> authorList = new ArrayList<>();
         Statement stmt = connection.createStatement();
         ResultSet resultSet = stmt.executeQuery("SELECT * FROM libraryDB.authors");
-        while (resultSet.next()){
+        while (resultSet.next()) {
             int id = resultSet.getInt("id");
             String firstName = resultSet.getString("first_name");
             String lastName = resultSet.getString("last_name");
