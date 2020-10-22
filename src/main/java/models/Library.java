@@ -11,13 +11,10 @@ import services.*;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Library {
-    private final Scanner scanner = new Scanner(System.in);
+    private Scanner scanner = new Scanner(System.in);
     private final Connection connection;
     private Client client;
     private Librarian librarian;
@@ -39,6 +36,7 @@ public class Library {
         option = scanner.nextInt();
         doWelcomeMenu(option);
         do {
+            setBookAuthorGenre();
             if (client != null) {
                 setClientProperties();
                 clientLogic();
@@ -53,58 +51,71 @@ public class Library {
 
     private void clientLogic() throws SQLException {
         //TODO client logic
-        clientMenu();
-        int option;
-        option = scanner.nextInt();
-        switch (option) {
-            case 1:
-                //SHOW AVAILABLE BOOKS IN LIBRARY
-                printBookListingMenu();
-                System.out.println("enter option");
-                option = scanner.nextInt();
-                listBooks(option);
-                break;
-            case 2:
-                //SEARCH BOOK
-                doSearchBook();
-                break;
-            case 3:
-                //SHOW BORROW HISTORY
-                client.getBorrowedBooks()
-                        .forEach(borrowedBook -> System.out.println(borrowedBook.getBook().getBookName() +
-                                " borrowed on "+ borrowedBook.getBorrowedOn()));
-                break;
-            case 4:
-                //SHOW CURRENT BORROWED BOOK
-                System.out.println(client.getCurrentBorrowedBook().getBook().getBookName() +
-                        " borrowed on " + client.getCurrentBorrowedBook().getBorrowedOn());
-                break;
-            case 5:
-                //BORROW BOOK
-                if (client.getCurrentBorrowedBook() == null){
-                    System.out.println("ISBN");
-                    long isbn = scanner.nextLong();
-                    borrowReturnService.borrowBook(searchService.searchByIsbn(isbn, bookList),client, connection);
-                }else {
-                    System.out.println("please first return your borrowed book");
-                    System.out.println(client.getCurrentBorrowedBook().getBook().getBookName());
-                }
-                break;
-            case 6:
-                //RETURN BORROWED BOOK
-                borrowReturnService.returnBook(borrowReturnService
-                        .getCurrentBorrowedBook(client,bookList,connection).getBook(),client,connection);
-                break;
-            case 7:
-                //LOG OUT
-                client = null;
-                break;
-            case 8:
-                //EXIT
-                System.exit(0);
-                break;
-            default:
-                clientLogic();
+        try {
+            clientMenu();
+            int option;
+            option = scanner.nextInt();
+            switch (option) {
+                case 1:
+                    //SHOW AVAILABLE BOOKS IN LIBRARY
+                    printBookListingMenu();
+                    System.out.println("enter option");
+                    option = scanner.nextInt();
+                    listBooks(option);
+                    break;
+                case 2:
+                    //SEARCH BOOK
+                    doSearchBook();
+                    break;
+                case 3:
+                    //SHOW BORROW HISTORY
+                    if (client.getBorrowedBooks().size() > 0) {
+                        client.getBorrowedBooks()
+                                .forEach(borrowedBook -> System.out.println(borrowedBook.getBook().getBookName() +
+                                        " borrowed on " + borrowedBook.getBorrowedOn()));
+                    } else {
+                        System.out.println("You haven't borrowed any books yet!");
+                    }
+                    break;
+                case 4:
+                    //SHOW CURRENT BORROWED BOOK
+                    if (client.getCurrentBorrowedBook() != null) {
+                        System.out.println(client.getCurrentBorrowedBook().getBook().getBookName() +
+                                " borrowed on " + client.getCurrentBorrowedBook().getBorrowedOn());
+                    } else {
+                        System.out.println("You don't have a current borrowed book!");
+                    }
+
+                    break;
+                case 5:
+                    //BORROW BOOK
+                    if (client.getCurrentBorrowedBook() == null) {
+                        System.out.println("ISBN");
+                        long isbn = scanner.nextLong();
+                        borrowReturnService.borrowBook(searchService.searchByIsbn(isbn, bookList), client, connection);
+                    } else {
+                        System.out.println("please first return your borrowed book");
+                        System.out.println(client.getCurrentBorrowedBook().getBook().getBookName());
+                    }
+                    break;
+                case 6:
+                    //RETURN BORROWED BOOK
+                    borrowReturnService.returnBook(borrowReturnService
+                            .getCurrentBorrowedBook(client, bookList, connection).getBook(), client, connection);
+                    break;
+                case 7:
+                    //LOG OUT
+                    client = null;
+                    break;
+                case 8:
+                    //EXIT
+                    System.exit(0);
+                    break;
+            }
+        } catch (InputMismatchException e) {
+            System.out.println("Invalid input");
+            scanner = new Scanner(System.in);
+            clientLogic();
         }
     }
 
@@ -120,10 +131,9 @@ public class Library {
         System.out.println("8 - Exit");
     }
 
-    private void setClientProperties() throws SQLException{
-        setBookAuthorGenre();
-        client.setBorrowedBooks(borrowReturnService.getBorrowHistory(client,bookList,connection));
-        client.setCurrentBorrowedBook(borrowReturnService.getCurrentBorrowedBook(client,bookList,connection));
+    private void setClientProperties() throws SQLException {
+        client.setBorrowedBooks(borrowReturnService.getBorrowHistory(client, bookList, connection));
+        client.setCurrentBorrowedBook(borrowReturnService.getCurrentBorrowedBook(client, bookList, connection));
     }
 
 //------------------- LIBRARIAN RELATED METHODS ------------------------------------------------------------------------
@@ -220,8 +230,8 @@ public class Library {
                 bookList.sort(Comparator.comparing(Book::getBookName));
                 for (Book book : bookList) {
                     System.out.print(book.getBookName() + " - ");
-                    System.out.println(" - stock : " + book.getStock() + " ");
-                    System.out.println(" ISBN - " + book.getIsbn() + " - ");
+                    System.out.print(" - stock : " + book.getStock() + " ");
+                    System.out.print(" ISBN - " + book.getIsbn() + " - ");
                     for (Author author : book.getAuthors()) {
                         System.out.print(author.getFirstName() + " " + author.getLastName() + " - ");
                     }
@@ -233,7 +243,18 @@ public class Library {
                 break;
             case 2:
                 bookList.sort((book, t1) -> t1.getBookName().compareTo(book.getBookName()));
-                bookList.forEach(System.out::println);
+                for (Book book : bookList) {
+                    System.out.print(book.getBookName() + " - ");
+                    System.out.print(" - stock : " + book.getStock() + " ");
+                    System.out.print(" ISBN - " + book.getIsbn() + " - ");
+                    for (Author author : book.getAuthors()) {
+                        System.out.print(author.getFirstName() + " " + author.getLastName() + " - ");
+                    }
+                    for (Genre genre : book.getGenres()) {
+                        System.out.print(genre + ", ");
+                    }
+                    System.out.println();
+                }
                 break;
             case 3:
                 //return

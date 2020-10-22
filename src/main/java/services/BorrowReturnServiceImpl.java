@@ -31,19 +31,21 @@ public class BorrowReturnServiceImpl implements BorrowReturnService {
 
     @Override
     public void returnBook(Book book, Client client, Connection connection) throws SQLException {
-        String returnBookQuery = "UPDATE libraryDB.borrowed_book_user " +
-                "SET returned_on=CURDATE() WHERE id_user = ? AND id_book = ?;";
-        PreparedStatement pStmtReturnBook = connection.prepareStatement(returnBookQuery);
-        pStmtReturnBook.setString(1, String.valueOf(client.getId()));
-        pStmtReturnBook.setString(2, String.valueOf(book.getId()));
-        pStmtReturnBook.executeUpdate();
+        if (client.getCurrentBorrowedBook()!=null){
+            String returnBookQuery = "UPDATE libraryDB.borrowed_book_user " +
+                    "SET returned_on=CURDATE() WHERE id_user = ? AND id_book = ?;";
+            PreparedStatement pStmtReturnBook = connection.prepareStatement(returnBookQuery);
+            pStmtReturnBook.setString(1, String.valueOf(client.getId()));
+            pStmtReturnBook.setString(2, String.valueOf(book.getId()));
+            pStmtReturnBook.executeUpdate();
 
-        String updateBooks = "UPDATE libraryDB.books\n" +
-                "SET stock = (stock+1)\n" +
-                "WHERE id=?;";
-        PreparedStatement pStmtUpdateBook = connection.prepareStatement(updateBooks);
-        pStmtUpdateBook.setString(1, String.valueOf(book.getId()));
-        pStmtUpdateBook.executeUpdate();
+            String updateBooks = "UPDATE libraryDB.books\n" +
+                    "SET stock = (stock+1)\n" +
+                    "WHERE id=?;";
+            PreparedStatement pStmtUpdateBook = connection.prepareStatement(updateBooks);
+            pStmtUpdateBook.setString(1, String.valueOf(book.getId()));
+            pStmtUpdateBook.executeUpdate();
+        }
     }
 
     @Override
