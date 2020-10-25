@@ -311,27 +311,81 @@ public class DbBookDao implements BookDao {
     }
 
     @Override
-    public Book findById(Connection connection, int itemId) throws SQLException {
+    public Book findById(Connection connection, int id) throws SQLException {
+        PreparedStatement pStmtGetBook = connection.prepareStatement(
+                "SELECT * FROM libraryDB.books WHERE id = ?");
+        pStmtGetBook.setString(1, String.valueOf(id));
+        ResultSet rSetGetBook = pStmtGetBook.executeQuery();
+        if (rSetGetBook.next()) {
+            List<Author> authorList = new ArrayList<>();
+            List<Genre> genreList = new ArrayList<>();
+            int bookId = rSetGetBook.getInt("id");
+            PreparedStatement pStmtGetAuthorId = connection.prepareStatement(
+                    "SELECT * FROM libraryDB.book_author WHERE id_book = ?");
+            pStmtGetAuthorId.setString(1, String.valueOf(bookId));
+            ResultSet rSetGetAuthorId = pStmtGetAuthorId.executeQuery();
+            while (rSetGetAuthorId.next()) {
+                int authorId = rSetGetAuthorId.getInt("id_author");
+                PreparedStatement pStmtGetAuthor = connection.prepareStatement(
+                        "SELECT * FROM libraryDB.authors WHERE id = ?");
+                pStmtGetAuthor.setString(1, String.valueOf(authorId));
+                ResultSet rSetGetAuthor = pStmtGetAuthor.executeQuery();
+                while (rSetGetAuthor.next()) {
+                    authorList.add(new Author(
+                            rSetGetAuthor.getInt("id"),
+                            rSetGetAuthor.getString("first_name"),
+                            rSetGetAuthor.getString("last_name"),
+                            rSetGetAuthor.getString("additional_info"),
+                            rSetGetAuthor.getDate("birth_date").toLocalDate(),
+                            LocalDate.now()
+                    ));
+                }
+            }
+            PreparedStatement pStmtGetGenreId = connection.prepareStatement(
+                    "SELECT * FROM libraryDB.book_genre WHERE id_book = ?");
+            pStmtGetGenreId.setString(1, String.valueOf(bookId));
+            ResultSet rSetGetGenreId = pStmtGetGenreId.executeQuery();
+            while (rSetGetGenreId.next()) {
+                int genreId = rSetGetGenreId.getInt("id_genre");
+                PreparedStatement pStmtGetGenre = connection.prepareStatement(
+                        "SELECT * FROM libraryDB.genre WHERE id = ?");
+                pStmtGetGenre.setString(1, String.valueOf(genreId));
+                ResultSet rSetGetGenre = pStmtGetGenre.executeQuery();
+                while (rSetGetGenre.next()) {
+                    String genre = rSetGetGenre.getString("genre_type").replace(" ", "_").toUpperCase();
+                    genreList.add(Genre.valueOf(genre));
+                }
+            }
+            return new Book(
+                    bookId,
+                    rSetGetBook.getString("book_name"),
+                    authorList,
+                    genreList,
+                    rSetGetBook.getLong("isbn"),
+                    rSetGetBook.getDate("release_date").toLocalDate(),
+                    rSetGetBook.getInt("stock")
+            );
+        }
         return null;
     }
 
     @Override
-    public boolean create(Connection connection, Book item) throws SQLException {
+    public boolean create(Connection connection, Book book) throws SQLException {
         return false;
     }
 
     @Override
-    public boolean update(Connection connection, Book item) throws SQLException {
+    public boolean update(Connection connection, Book book) throws SQLException {
         return false;
     }
 
     @Override
-    public boolean remove(Connection connection, Book item) throws SQLException {
+    public boolean remove(Connection connection, Book book) throws SQLException {
         return false;
     }
 
     @Override
-    public boolean remove(Connection connection, int itemId) throws SQLException {
+    public boolean remove(Connection connection, int id) throws SQLException {
         return false;
     }
 }
