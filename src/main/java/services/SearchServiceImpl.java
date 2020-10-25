@@ -31,11 +31,16 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
-    public List<Book> searchByGenre(Genre genre, List<Book> bookList) {
-        return bookList.stream()
-                .filter(book -> book.getGenres().contains(genre))
-                .collect(Collectors.toList());
+    public List<Book> searchByGenre(String genre, List<Book> bookList) {
+        return null;
     }
+//
+//    @Override
+//    public List<Book> searchByGenre(String genre, List<Book> bookList) {
+//        return bookList.stream()
+//                .filter(book -> book.getGenres().contains(genre))
+//                .collect(Collectors.toList());
+//    }
 
     @Override
     public Author getAuthor(String firstName, String lastName, List<Author> authorList) {
@@ -47,10 +52,13 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
-    public Genre getGenre(String genre, List<Genre> genreList) {
-        return genreList.stream()
-                .filter(genreObj -> genreObj.equals(Genre.valueOf(genre)))
-                .findAny()
-                .orElse(null);
+    public String getGenre(String genre, List<Genre> genreList) {
+        return null;
     }
+
+//    @Override
+//    public String getGenre(String genreString, List<String> genreList) {
+//        return genreList.stream()
+//               .filter(genre -> )
+//    }
 }

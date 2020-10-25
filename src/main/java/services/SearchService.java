@@ -13,9 +13,9 @@ public interface SearchService {
 
     List<Book> searchByAuthor(Author author, List<Book> bookList);
 
-    List<Book> searchByGenre(Genre genre, List<Book> bookList);
+    List<Book> searchByGenre(String genre, List<Book> bookList);
 
     Author getAuthor(String firstName, String lastName, List<Author> authorList);
 
-    Genre getGenre(String genre, List<Genre> genreList);
+    String getGenre(String genre, List<Genre> genreList);
 }

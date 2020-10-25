@@ -7,18 +7,13 @@ public class Book {
     private int id;
     private String bookName;
     private List<Author> authors;
-    private List<Genre> genres;
-    private Author author;
+    private List<String> genres;
     private long isbn;
     private LocalDate releaseDate;
     private int stock;
 
-    public Book(String bookName, List<Author> authors) {
-        this.bookName = bookName;
-        this.authors = authors;
-    }
 
-    public Book(int id, String bookName, List<Author> authors, List<Genre> genres, long isbn, LocalDate releaseDate, int stock) {
+    public Book(int id, String bookName, List<Author> authors, List<String> genres, long isbn, LocalDate releaseDate, int stock) {
         this.id = id;
         this.bookName = bookName;
         this.authors = authors;
@@ -52,11 +47,11 @@ public class Book {
         this.authors = authors;
     }
 
-    public List<Genre> getGenres() {
+    public List<String> getGenres() {
         return genres;
     }
 
-    public void setGenres(List<Genre> genres) {
+    public void setGenres(List<String> genres) {
         this.genres = genres;
     }
 

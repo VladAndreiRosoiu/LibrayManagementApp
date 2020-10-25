@@ -1,15 +1,13 @@
 package dao;
 
-import models.book.Genre;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DbGenreDao implements GenreDao {
     @Override
-    public List<Genre> findGenreByBookId(Connection connection, int bookId) throws SQLException {
-        List<Genre> genreList = new ArrayList<>();
+    public List<String> findGenreByBookId(Connection connection, int bookId) throws SQLException {
+        List<String> genreList = new ArrayList<>();
         PreparedStatement preparedStatement = connection.prepareStatement("SELECT id_genre FROM libraryDB.book_genre WHERE id_book = ?");
         preparedStatement.setString(1, String.valueOf(bookId));
         ResultSet resultSet = preparedStatement.executeQuery();
@@ -19,42 +17,42 @@ public class DbGenreDao implements GenreDao {
             preparedStatement1.setString(1, String.valueOf(idGenre));
             ResultSet resultSet1 = preparedStatement1.executeQuery();
             while (resultSet1.next()) {
-                String genre = resultSet1.getString("genre_type").replace(" ", "_").toUpperCase();
-                genreList.add(Genre.valueOf(genre));
+                String genre = resultSet1.getString("genre_type");
+                genreList.add(genre);
             }
         }
         return genreList;
     }
 
     @Override
-    public List<Genre> findAll(Connection connection) throws SQLException {
-        List<Genre> genreList = new ArrayList<>();
+    public List<String> findAll(Connection connection) throws SQLException {
+        List<String> genreList = new ArrayList<>();
         Statement stmt = connection.createStatement();
         ResultSet resultSet = stmt.executeQuery("SELECT * FROM libraryDB.genre");
         while (resultSet.next()) {
-            String genre = resultSet.getString("genre_type").replace(" ", "_").toUpperCase();
-            genreList.add(Genre.valueOf(genre));
+            String genre = resultSet.getString("genre_type");
+            genreList.add(genre);
         }
         return genreList;
     }
 
     @Override
-    public Genre findById(Connection connection, int itemId) throws SQLException {
+    public String findById(Connection connection, int itemId) throws SQLException {
         return null;
     }
 
     @Override
-    public boolean create(Connection connection, Genre item) throws SQLException {
+    public boolean create(Connection connection, String item) throws SQLException {
         return false;
     }
 
     @Override
-    public boolean update(Connection connection, Genre item) throws SQLException {
+    public boolean update(Connection connection, String item) throws SQLException {
         return false;
     }
 
     @Override
-    public boolean remove(Connection connection, Genre item) throws SQLException {
+    public boolean remove(Connection connection, String item) throws SQLException {
         return false;
     }
 

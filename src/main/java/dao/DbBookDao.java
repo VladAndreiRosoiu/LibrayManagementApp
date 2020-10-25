@@ -20,7 +20,7 @@ public class DbBookDao implements BookDao {
         ResultSet rSetGetBook = pStmtGetBook.executeQuery();
         if (rSetGetBook.next()) {
             List<Author> authorList = new ArrayList<>();
-            List<Genre> genreList = new ArrayList<>();
+            List<String> genreList = new ArrayList<>();
             int bookId = rSetGetBook.getInt("id");
             PreparedStatement pStmtGetAuthorId = connection.prepareStatement(
                     "SELECT * FROM libraryDB.book_author WHERE id_book = ?");
@@ -54,8 +54,8 @@ public class DbBookDao implements BookDao {
                 pStmtGetGenre.setString(1, String.valueOf(genreId));
                 ResultSet rSetGetGenre = pStmtGetGenre.executeQuery();
                 while (rSetGetGenre.next()) {
-                    String genre = rSetGetGenre.getString("genre_type").replace(" ", "_").toUpperCase();
-                    genreList.add(Genre.valueOf(genre));
+                    String genre = rSetGetGenre.getString("genre_type");
+                    genreList.add(genre);
                 }
             }
             return new Book(
@@ -80,7 +80,7 @@ public class DbBookDao implements BookDao {
         ResultSet rSetGetBook = pStmtGetBook.executeQuery();
         while (rSetGetBook.next()) {
             List<Author> authorList = new ArrayList<>();
-            List<Genre> genreList = new ArrayList<>();
+            List<String> genreList = new ArrayList<>();
             int bookId = rSetGetBook.getInt("id");
             PreparedStatement pStmtGetAuthorId = connection.prepareStatement(
                     "SELECT * FROM libraryDB.book_author WHERE id_book = ?");
@@ -114,8 +114,8 @@ public class DbBookDao implements BookDao {
                 pStmtGetGenre.setString(1, String.valueOf(genreId));
                 ResultSet rSetGetGenre = pStmtGetGenre.executeQuery();
                 while (rSetGetGenre.next()) {
-                    String genre = rSetGetGenre.getString("genre_type").replace(" ", "_").toUpperCase();
-                    genreList.add(Genre.valueOf(genre));
+                    String genre = rSetGetGenre.getString("genre_type");
+                    genreList.add(genre);
                 }
             }
             bookList.add(new Book(
@@ -138,7 +138,7 @@ public class DbBookDao implements BookDao {
         ResultSet rSetGetBook = stmtGetBook.executeQuery("SELECT * FROM libraryDB.books");
         while (rSetGetBook.next()) {
             List<Author> authorList = new ArrayList<>();
-            List<Genre> genreList = new ArrayList<>();
+            List<String> genreList = new ArrayList<>();
             int bookId = rSetGetBook.getInt("id");
             PreparedStatement pStmtGetAuthorId = connection.prepareStatement(
                     "SELECT * FROM libraryDB.book_author WHERE id_book = ?");
@@ -172,8 +172,8 @@ public class DbBookDao implements BookDao {
                 pStmtGetGenre.setString(1, String.valueOf(genreId));
                 ResultSet rSetGetGenre = pStmtGetGenre.executeQuery();
                 while (rSetGetGenre.next()) {
-                    String genre = rSetGetGenre.getString("genre_type").replace(" ", "_").toUpperCase();
-                    genreList.add(Genre.valueOf(genre));
+                    String genre = rSetGetGenre.getString("genre_type");
+                    genreList.add(genre);
                 }
             }
             bookList.add(new Book(
@@ -190,13 +190,13 @@ public class DbBookDao implements BookDao {
     }
 
     @Override
-    public List<Book> findByGenre(Connection connection, Genre genre) throws SQLException {
+    public List<Book> findByGenre(Connection connection, String genre) throws SQLException {
         List<Book> bookList = new ArrayList<>();
         Statement stmtGetBook = connection.createStatement();
         ResultSet rSetGetBook = stmtGetBook.executeQuery("SELECT * FROM libraryDB.books");
         while (rSetGetBook.next()) {
             List<Author> authorList = new ArrayList<>();
-            List<Genre> genreList = new ArrayList<>();
+            List<String> genreList = new ArrayList<>();
             int bookId = rSetGetBook.getInt("id");
             PreparedStatement pStmtGetAuthorId = connection.prepareStatement(
                     "SELECT * FROM libraryDB.book_author WHERE id_book = ?");
@@ -230,8 +230,8 @@ public class DbBookDao implements BookDao {
                 pStmtGetGenre.setString(1, String.valueOf(genreId));
                 ResultSet rSetGetGenre = pStmtGetGenre.executeQuery();
                 while (rSetGetGenre.next()) {
-                    String genreString = rSetGetGenre.getString("genre_type").replace(" ", "_").toUpperCase();
-                    genreList.add(Genre.valueOf(genreString));
+                    String genreResult = rSetGetGenre.getString("genre_type");
+                    genreList.add(genreResult);
                 }
             }
             bookList.add(new Book(
@@ -259,7 +259,7 @@ public class DbBookDao implements BookDao {
         ResultSet rSetGetBook = stmtGetBook.executeQuery("SELECT * FROM libraryDB.books");
         while (rSetGetBook.next()) {
             List<Author> authorList = new ArrayList<>();
-            List<Genre> genreList = new ArrayList<>();
+            List<String> genreList = new ArrayList<>();
             int bookId = rSetGetBook.getInt("id");
             PreparedStatement pStmtGetAuthorId = connection.prepareStatement(
                     "SELECT * FROM libraryDB.book_author WHERE id_book = ?");
@@ -293,8 +293,8 @@ public class DbBookDao implements BookDao {
                 pStmtGetGenre.setString(1, String.valueOf(genreId));
                 ResultSet rSetGetGenre = pStmtGetGenre.executeQuery();
                 while (rSetGetGenre.next()) {
-                    String genre = rSetGetGenre.getString("genre_type").replace(" ", "_").toUpperCase();
-                    genreList.add(Genre.valueOf(genre));
+                    String genre = rSetGetGenre.getString("genre_type");
+                    genreList.add(genre);
                 }
             }
             bookList.add(new Book(
@@ -318,7 +318,7 @@ public class DbBookDao implements BookDao {
         ResultSet rSetGetBook = pStmtGetBook.executeQuery();
         if (rSetGetBook.next()) {
             List<Author> authorList = new ArrayList<>();
-            List<Genre> genreList = new ArrayList<>();
+            List<String> genreList = new ArrayList<>();
             int bookId = rSetGetBook.getInt("id");
             PreparedStatement pStmtGetAuthorId = connection.prepareStatement(
                     "SELECT * FROM libraryDB.book_author WHERE id_book = ?");
@@ -352,8 +352,8 @@ public class DbBookDao implements BookDao {
                 pStmtGetGenre.setString(1, String.valueOf(genreId));
                 ResultSet rSetGetGenre = pStmtGetGenre.executeQuery();
                 while (rSetGetGenre.next()) {
-                    String genre = rSetGetGenre.getString("genre_type").replace(" ", "_").toUpperCase();
-                    genreList.add(Genre.valueOf(genre));
+                    String genre = rSetGetGenre.getString("genre_type");
+                    genreList.add(genre);
                 }
             }
             return new Book(
@@ -371,6 +371,13 @@ public class DbBookDao implements BookDao {
 
     @Override
     public boolean create(Connection connection, Book book) throws SQLException {
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                "INSERT INTO libraryDB.books(book_name, isbn, stock, release_date) VALUES (?,?,?,?)");
+        preparedStatement.setString(1, book.getBookName());
+        preparedStatement.setString(2, String.valueOf(book.getIsbn()));
+        preparedStatement.setString(3, String.valueOf(book.getStock()));
+        preparedStatement.setString(4, String.valueOf(book.getReleaseDate()));
+        preparedStatement.executeUpdate();
         return false;
     }
 

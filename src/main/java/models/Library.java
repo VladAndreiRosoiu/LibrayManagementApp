@@ -58,7 +58,7 @@ public class Library {
                 case 1:
                     //SHOW AVAILABLE BOOKS IN LIBRARY
 //                    listBooks();
-                    findAll();
+                    bookDao.findAll(connection).forEach(book -> System.out.println(book.getBookName()));
                     break;
                 case 2:
                     //SEARCH BOOK
@@ -295,7 +295,7 @@ public class Library {
                         for (Author author : book.getAuthors()) {
                             System.out.print(author.getFirstName() + " " + author.getLastName() + " - ");
                         }
-                        for (Genre genre : book.getGenres()) {
+                        for (String genre : book.getGenres()) {
                             System.out.print(genre + ", ");
                         }
                         System.out.println();
@@ -310,7 +310,7 @@ public class Library {
                         for (Author author : book.getAuthors()) {
                             System.out.print(author.getFirstName() + " " + author.getLastName() + " - ");
                         }
-                        for (Genre genre : book.getGenres()) {
+                        for (String genre : book.getGenres()) {
                             System.out.print(genre + ", ");
                         }
                         System.out.println();
@@ -369,8 +369,8 @@ public class Library {
                 //search by genre
                 System.out.println("Genre");
                 scanner.skip("\n");
-                String genre = scanner.nextLine().replace(" ", "_").toUpperCase();
-                searchService.searchByGenre(searchService.getGenre(genre, genreDao.findAll(connection)), bookList).forEach(System.out::println);
+                String genre = scanner.nextLine();
+                //searchService.searchByGenre(searchService.getGenre(genre, genreDao.findAll(connection)), bookList).forEach(System.out::println);
                 break;
             case 4:
                 //search by isbn
@@ -393,36 +393,6 @@ public class Library {
         return bookList.get(choice - 1);
     }
 
-    private void findAll() throws SQLException{
-        List<Book> books = new ArrayList<>();
-        List<Author> authors = new ArrayList<>();
-        Statement preparedStatement = connection.createStatement();
-        ResultSet resultSet = preparedStatement.executeQuery("SELECT libraryDB.authors.first_name, libraryDB.authors.last_name, libraryDB.books.book_name\n" +
-                "FROM libraryDB.authors\n" +
-                "JOIN libraryDB.book_author\n" +
-                "ON libraryDB.book_author.id_author = libraryDB.authors.id\n" +
-                "JOIN libraryDB.books\n" +
-                "ON libraryDB.book_author.id_book = libraryDB.books.id;");
-        while (resultSet.next()){
-            String firstName = resultSet.getString("first_name");
-            String lastName = resultSet.getString("last_name");
-            String bookName = resultSet.getString("book_name");
-            authors.add(new Author(firstName,lastName));
-            books.add(new Book(firstName,authors));
-            if (books.size()>0){
-                for (Book book: books){
-                    if (book.getBookName().equals(bookName)){
-                        authors.add(new Author(firstName,lastName));
-                        book.setAuthors(authors);
-                        books.add(book);
-                    }else {
-                        authors.add(new Author(firstName,lastName));
-                        books.add(new Book(bookName, authors));
-                    }
-                }
-            }
-        }
-        books.forEach(book -> System.out.println(book.getBookName()));
-    }
+
 
 }
