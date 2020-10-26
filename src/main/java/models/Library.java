@@ -11,7 +11,6 @@ import java.util.*;
 
 public class Library {
     private Scanner scanner = new Scanner(System.in);
-    private final Connection connection;
     private Client client;
     private Librarian librarian;
     List<Book> bookList = new ArrayList<>();
@@ -23,8 +22,7 @@ public class Library {
     GenreDao genreDao = new DbGenreDao();
     ClientDao clientDao = new DbClientDao();
 
-    public Library(Connection connection) {
-        this.connection = connection;
+    public Library() {
     }
 
     public void initLibrary() throws SQLException {

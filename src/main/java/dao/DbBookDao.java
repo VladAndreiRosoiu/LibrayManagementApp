@@ -1,5 +1,6 @@
 package dao;
 
+import database.GetDBConnection;
 import models.book.Author;
 import models.book.Book;
 import models.book.Genre;
@@ -11,6 +12,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class DbBookDao implements BookDao {
+
+    Connection connection = new GetDBConnection().getConnection();
 
     @Override
     public Book findByIsbn(Connection connection, long isbn) throws SQLException {
@@ -365,6 +368,10 @@ public class DbBookDao implements BookDao {
 
     @Override
     public boolean create(Connection connection, Book book) throws SQLException {
+
+//        genreDao.createGenre();  if it doesn't exists! if it exists, get his id. maybe do a for-each?
+//        authorDao.createAuthor();
+
         PreparedStatement preparedStatement = connection.prepareStatement(
                 "INSERT INTO libraryDB.books(book_name, isbn, stock, release_date) VALUES (?,?,?,?)");
         preparedStatement.setString(1, book.getBookName());

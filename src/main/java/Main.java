@@ -8,8 +8,8 @@ public class Main {
 
     public static void main(String[] args) {
         try {
-            Connection connection = GetDBConnection.getConnection();
-            Library library = new Library(connection);
+            //Connection connection = GetDBConnection.getConnection();
+            Library library = new Library();
             library.initLibrary();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
