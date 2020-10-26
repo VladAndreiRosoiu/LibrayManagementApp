@@ -8,6 +8,7 @@ import java.util.List;
 
 
 public interface ClientDao extends EntityDao<Client> {
+
     List<Client> findByFirstName(Connection connection, String firstName) throws SQLException;
 
     List<Client> findByLastName(Connection connection, String lastName) throws SQLException;

@@ -38,8 +38,7 @@ public class DbBookDao implements BookDao {
                             rSetGetAuthor.getString("first_name"),
                             rSetGetAuthor.getString("last_name"),
                             rSetGetAuthor.getString("additional_info"),
-                            rSetGetAuthor.getDate("birth_date").toLocalDate(),
-                            LocalDate.now()
+                            rSetGetAuthor.getDate("birth_date").toLocalDate()
                     ));
                 }
             }
@@ -98,8 +97,7 @@ public class DbBookDao implements BookDao {
                             rSetGetAuthor.getString("first_name"),
                             rSetGetAuthor.getString("last_name"),
                             rSetGetAuthor.getString("additional_info"),
-                            rSetGetAuthor.getDate("birth_date").toLocalDate(),
-                            LocalDate.now()
+                            rSetGetAuthor.getDate("birth_date").toLocalDate()
                     ));
                 }
             }
@@ -156,8 +154,7 @@ public class DbBookDao implements BookDao {
                             rSetGetAuthor.getString("first_name"),
                             rSetGetAuthor.getString("last_name"),
                             rSetGetAuthor.getString("additional_info"),
-                            rSetGetAuthor.getDate("birth_date").toLocalDate(),
-                            LocalDate.now()
+                            rSetGetAuthor.getDate("birth_date").toLocalDate()
                     ));
                 }
             }
@@ -214,8 +211,7 @@ public class DbBookDao implements BookDao {
                             rSetGetAuthor.getString("first_name"),
                             rSetGetAuthor.getString("last_name"),
                             rSetGetAuthor.getString("additional_info"),
-                            rSetGetAuthor.getDate("birth_date").toLocalDate(),
-                            LocalDate.now()
+                            rSetGetAuthor.getDate("birth_date").toLocalDate()
                     ));
                 }
             }
@@ -277,8 +273,7 @@ public class DbBookDao implements BookDao {
                             rSetGetAuthor.getString("first_name"),
                             rSetGetAuthor.getString("last_name"),
                             rSetGetAuthor.getString("additional_info"),
-                            rSetGetAuthor.getDate("birth_date").toLocalDate(),
-                            LocalDate.now()
+                            rSetGetAuthor.getDate("birth_date").toLocalDate()
                     ));
                 }
             }
@@ -336,8 +331,7 @@ public class DbBookDao implements BookDao {
                             rSetGetAuthor.getString("first_name"),
                             rSetGetAuthor.getString("last_name"),
                             rSetGetAuthor.getString("additional_info"),
-                            rSetGetAuthor.getDate("birth_date").toLocalDate(),
-                            LocalDate.now()
+                            rSetGetAuthor.getDate("birth_date").toLocalDate()
                     ));
                 }
             }

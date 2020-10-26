@@ -129,8 +129,8 @@ public class Library {
     }
 
     private void setClientProperties() throws SQLException {
-        client.setBorrowedBooks(borrowReturnService.getBorrowHistory(client, bookList, connection));
-        client.setCurrentBorrowedBook(borrowReturnService.getCurrentBorrowedBook(client, bookList, connection));
+        client.setBorrowedBooks(borrowReturnService.getBorrowHistory(client, bookDao.findAll(connection), connection));
+        client.setCurrentBorrowedBook(borrowReturnService.getCurrentBorrowedBook(client, bookDao.findAll(connection), connection));
     }
 
 //------------------- LIBRARIAN RELATED METHODS ------------------------------------------------------------------------
@@ -337,7 +337,7 @@ public class Library {
         bookList.forEach(book -> {
             try {
                 book.setAuthors(authorDao.findByBookId(connection, book.getId()));
-                book.setGenres(genreDao.findGenreByBookId(connection, book.getId()));
+                book.setGenres(genreDao.findGenresByBookId(connection, book.getId()));
             } catch (SQLException e) {
                 e.printStackTrace();
             }

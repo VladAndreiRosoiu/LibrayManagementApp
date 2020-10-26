@@ -6,7 +6,7 @@ import java.util.List;
 
 public class DbGenreDao implements GenreDao {
     @Override
-    public List<String> findGenreByBookId(Connection connection, int bookId) throws SQLException {
+    public List<String> findGenresByBookId(Connection connection, int bookId) throws SQLException {
         List<String> genreList = new ArrayList<>();
         PreparedStatement preparedStatement = connection.prepareStatement("SELECT id_genre FROM libraryDB.book_genre WHERE id_book = ?");
         preparedStatement.setString(1, String.valueOf(bookId));

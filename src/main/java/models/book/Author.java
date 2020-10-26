@@ -9,20 +9,13 @@ public class Author {
     private String lastName;
     private String description;
     private LocalDate birthDate;
-    private LocalDate deathDate;
 
-    public Author(String firstName, String lastName) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-    }
-
-    public Author(int id, String firstName, String lastName, String description, LocalDate birthDate, LocalDate deathDate) {
+    public Author(int id, String firstName, String lastName, String description, LocalDate birthDate) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.description = description;
         this.birthDate = birthDate;
-        this.deathDate = deathDate;
     }
 
     public int getId() {
@@ -63,14 +56,6 @@ public class Author {
 
     public void setBirthDate(LocalDate birthDate) {
         this.birthDate = birthDate;
-    }
-
-    public LocalDate getDeathDate() {
-        return deathDate;
-    }
-
-    public void setDeathDate(LocalDate deathDate) {
-        this.deathDate = deathDate;
     }
 
     @Override
