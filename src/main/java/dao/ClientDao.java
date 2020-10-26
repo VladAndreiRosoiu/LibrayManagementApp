@@ -2,20 +2,18 @@ package dao;
 
 import models.user.Client;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 
 
 public interface ClientDao extends EntityDao<Client> {
 
-    List<Client> findByFirstName(Connection connection, String firstName) throws SQLException;
+    List<Client> findByFirstName(String firstName);
 
-    List<Client> findByLastName(Connection connection, String lastName) throws SQLException;
+    List<Client> findByLastName(String lastName);
 
-    Client findByUsername(Connection connection, String username) throws SQLException;
+    Client findByUsername(String username);
 
-    Client findByEmail(Connection connection, String email) throws SQLException;
+    Client findByEmail(String email);
 
-    boolean removeByUsername(Connection connection, String username) throws SQLException;
+    boolean removeByUsername(String username);
 }

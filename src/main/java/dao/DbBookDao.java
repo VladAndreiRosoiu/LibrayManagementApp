@@ -3,10 +3,11 @@ package dao;
 import database.GetDBConnection;
 import models.book.Author;
 import models.book.Book;
-import models.book.Genre;
 
-import java.sql.*;
-import java.time.LocalDate;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,7 +17,7 @@ public class DbBookDao implements BookDao {
     Connection connection = new GetDBConnection().getConnection();
 
     @Override
-    public Book findByIsbn(Connection connection, long isbn) throws SQLException {
+    public Book findByIsbn(long isbn) {
         PreparedStatement pStmtGetBook = connection.prepareStatement(
                 "SELECT * FROM libraryDB.books WHERE isbn = ?");
         pStmtGetBook.setString(1, String.valueOf(isbn));
@@ -74,7 +75,7 @@ public class DbBookDao implements BookDao {
     }
 
     @Override
-    public List<Book> findByTitle(Connection connection, String name) throws SQLException {
+    public List<Book> findByTitle(String name) {
         List<Book> bookList = new ArrayList<>();
         PreparedStatement pStmtGetBook = connection.prepareStatement(
                 "SELECT * FROM libraryDB.books WHERE book_name LIKE ?");
@@ -133,7 +134,7 @@ public class DbBookDao implements BookDao {
     }
 
     @Override
-    public List<Book> findByAuthor(Connection connection, Author author) throws SQLException {
+    public List<Book> findByAuthor(Author author) {
         List<Book> bookList = new ArrayList<>();
         Statement stmtGetBook = connection.createStatement();
         ResultSet rSetGetBook = stmtGetBook.executeQuery("SELECT * FROM libraryDB.books");
@@ -190,7 +191,7 @@ public class DbBookDao implements BookDao {
     }
 
     @Override
-    public List<Book> findByGenre(Connection connection, String genre) throws SQLException {
+    public List<Book> findByGenre(String genre) {
         List<Book> bookList = new ArrayList<>();
         Statement stmtGetBook = connection.createStatement();
         ResultSet rSetGetBook = stmtGetBook.executeQuery("SELECT * FROM libraryDB.books");
@@ -247,12 +248,12 @@ public class DbBookDao implements BookDao {
     }
 
     @Override
-    public boolean removeByIsbn(Connection connection, long isbn) throws SQLException {
+    public boolean removeByIsbn(long isbn) {
         return false;
     }
 
     @Override
-    public List<Book> findAll(Connection connection) throws SQLException {
+    public List<Book> findAll() {
         List<Book> bookList = new ArrayList<>();
         Statement stmtGetBook = connection.createStatement();
         ResultSet rSetGetBook = stmtGetBook.executeQuery("SELECT * FROM libraryDB.books");
@@ -309,7 +310,7 @@ public class DbBookDao implements BookDao {
     }
 
     @Override
-    public Book findById(Connection connection, int id) throws SQLException {
+    public Book findById(int id) {
         PreparedStatement pStmtGetBook = connection.prepareStatement(
                 "SELECT * FROM libraryDB.books WHERE id = ?");
         pStmtGetBook.setString(1, String.valueOf(id));
@@ -367,7 +368,7 @@ public class DbBookDao implements BookDao {
     }
 
     @Override
-    public boolean create(Connection connection, Book book) throws SQLException {
+    public boolean create(Book book) {
 
 //        genreDao.createGenre();  if it doesn't exists! if it exists, get his id. maybe do a for-each?
 //        authorDao.createAuthor();
@@ -383,17 +384,17 @@ public class DbBookDao implements BookDao {
     }
 
     @Override
-    public boolean update(Connection connection, Book book) throws SQLException {
+    public boolean update(Book book) {
         return false;
     }
 
     @Override
-    public boolean remove(Connection connection, Book book) throws SQLException {
+    public boolean remove(Book book) {
         return false;
     }
 
     @Override
-    public boolean remove(Connection connection, int id) throws SQLException {
+    public boolean remove(int id) {
         return false;
     }
 }

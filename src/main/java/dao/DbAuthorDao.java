@@ -1,16 +1,22 @@
 package dao;
 
+import database.GetDBConnection;
 import models.book.Author;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DbAuthorDao implements AuthorDao {
 
+    Connection connection = new GetDBConnection().getConnection();
+
     @Override
-    public List<Author> findByBookId(Connection connection, int bookId) throws SQLException {
+    public List<Author> findByBookId(int bookId) {
         List<Author> authorList = new ArrayList<>();
         PreparedStatement preparedStatement = connection.
                 prepareStatement("SELECT id_author FROM libraryDB.book_author WHERE id_book = ?");
@@ -35,7 +41,7 @@ public class DbAuthorDao implements AuthorDao {
     }
 
     @Override
-    public List<Author> findAll(Connection connection) throws SQLException {
+    public List<Author> findAll() {
         List<Author> authorList = new ArrayList<>();
         Statement stmt = connection.createStatement();
         ResultSet resultSet = stmt.executeQuery("SELECT * FROM libraryDB.authors");
@@ -51,12 +57,12 @@ public class DbAuthorDao implements AuthorDao {
     }
 
     @Override
-    public Author findById(Connection connection, int authorId) throws SQLException {
+    public Author findById(int authorId) {
         PreparedStatement preparedStatement = connection.prepareStatement(
                 "SELECT * FROM libraryDB.authors WHERE id = ?");
         preparedStatement.setString(1, String.valueOf(authorId));
         ResultSet resultSet = preparedStatement.executeQuery();
-        if (resultSet.next()){
+        if (resultSet.next()) {
             int id = resultSet.getInt("id");
             String firstName = resultSet.getString("first_name");
             String lastName = resultSet.getString("last_name");
@@ -68,7 +74,7 @@ public class DbAuthorDao implements AuthorDao {
     }
 
     @Override
-    public boolean create(Connection connection, Author author) throws SQLException {
+    public boolean create(Author author) {
         PreparedStatement preparedStatement = connection.prepareStatement(
                 "INSERT INTO libraryDB.authors(first_name, last_name, additional_info, birth_date) VALUES (?,?,?,?)");
         preparedStatement.setString(1, author.getFirstName());
@@ -80,7 +86,7 @@ public class DbAuthorDao implements AuthorDao {
     }
 
     @Override
-    public boolean update(Connection connection, Author author) throws SQLException {
+    public boolean update(Author author) {
         PreparedStatement preparedStatement = connection.prepareStatement(
                 "UPDATE libraryDB.authors SET first_name = ?, last_name = ?, additional_info = ?, birth_date = ? WHERE id = ?");
         preparedStatement.setString(1, author.getFirstName());
@@ -92,12 +98,12 @@ public class DbAuthorDao implements AuthorDao {
     }
 
     @Override
-    public boolean remove(Connection connection, Author author) throws SQLException {
+    public boolean remove(Author author) {
         return false;
     }
 
     @Override
-    public boolean remove(Connection connection, int authorId) throws SQLException {
+    public boolean remove(int authorId) {
         return false;
     }
 }

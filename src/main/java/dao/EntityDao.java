@@ -1,19 +1,17 @@
 package dao;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 
 public interface EntityDao<T> {
-    List<T> findAll(Connection connection) throws SQLException;
+    List<T> findAll();
 
-    T findById(Connection connection, int itemId) throws SQLException;
+    T findById(int itemId);
 
-    boolean create(Connection connection, T item) throws SQLException;
+    boolean create(T item);
 
-    boolean update(Connection connection, T item) throws SQLException;
+    boolean update(T item);
 
-    boolean remove(Connection connection, T item) throws SQLException;
+    boolean remove(T item);
 
-    boolean remove(Connection connection, int itemId) throws SQLException;
+    boolean remove(int itemId);
 }
