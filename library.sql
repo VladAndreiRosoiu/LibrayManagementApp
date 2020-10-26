@@ -18,7 +18,6 @@ first_name VARCHAR(255) NOT NULL,
 last_name VARCHAR(255) NOT NULL,
 additional_info VARCHAR(1000),
 birth_date DATE NOT NULL,
-death_date DATE,
 CONSTRAINT author_cons UNIQUE (first_name, last_name, birth_date));
 
 CREATE TABLE genre(

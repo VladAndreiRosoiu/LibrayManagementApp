@@ -81,6 +81,13 @@ public class DbAuthorDao implements AuthorDao {
 
     @Override
     public boolean update(Connection connection, Author author) throws SQLException {
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                "UPDATE libraryDB.authors SET first_name = ?, last_name = ?, additional_info = ?, birth_date = ? WHERE id = ?");
+        preparedStatement.setString(1, author.getFirstName());
+        preparedStatement.setString(2, author.getLastName());
+        preparedStatement.setString(3, author.getDescription());
+        preparedStatement.setString(4, String.valueOf(author.getBirthDate()));
+        preparedStatement.executeUpdate();
         return false;
     }
 
