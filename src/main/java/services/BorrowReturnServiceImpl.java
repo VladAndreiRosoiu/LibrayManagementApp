@@ -31,7 +31,7 @@ public class BorrowReturnServiceImpl implements BorrowReturnService {
 
     @Override
     public void returnBook(Book book, Client client, Connection connection) throws SQLException {
-        if (client.getCurrentBorrowedBook()!=null){
+        if (client.getCurrentBorrowedBook() != null) {
             String returnBookQuery = "UPDATE libraryDB.borrowed_book_user " +
                     "SET returned_on=CURDATE() WHERE id_user = ? AND id_book = ?;";
             PreparedStatement pStmtReturnBook = connection.prepareStatement(returnBookQuery);

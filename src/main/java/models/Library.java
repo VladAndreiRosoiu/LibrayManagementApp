@@ -1,21 +1,22 @@
 package models;
 
 import dao.*;
-import models.book.*;
+import models.book.Book;
 import models.user.Client;
 import models.user.Librarian;
-import services.*;
+import services.AuthService;
+import services.AuthServiceImpl;
+import services.BorrowReturnService;
+import services.BorrowReturnServiceImpl;
 
-import java.sql.*;
+import java.sql.SQLException;
 import java.util.*;
 
 public class Library {
-    private Scanner scanner = new Scanner(System.in);
+    private Scanner sc = new Scanner(System.in);
     private Client client;
     private Librarian librarian;
-    List<Book> bookList = new ArrayList<>();
     AuthService authService = new AuthServiceImpl();
-    SearchService searchService = new SearchServiceImpl();
     BorrowReturnService borrowReturnService = new BorrowReturnServiceImpl();
     AuthorDao authorDao = new DbAuthorDao();
     BookDao bookDao = new DbBookDao();
@@ -29,15 +30,17 @@ public class Library {
         do {
             int option;
             printWelcomeMenu();
-            option = scanner.nextInt();
+            option = sc.nextInt();
             doWelcomeMenu(option);
             do {
-                setBookAuthorGenre();
+                //setBookAuthorGenre();
                 if (client != null) {
-                    setClientProperties();
+                    //setClientProperties();
+                    System.out.println("Welcome " + client.getFirstName() + " " + client.getLastName());
                     clientLogic();
                 }
                 if (librarian != null) {
+                    System.out.println("Welcome " + librarian.getFirstName() + " " + librarian.getLastName());
                     librarianLogic();
                 }
             } while (client != null || librarian != null);
@@ -51,12 +54,11 @@ public class Library {
         try {
             clientMenu();
             int option;
-            option = scanner.nextInt();
+            option = sc.nextInt();
             switch (option) {
                 case 1:
                     //SHOW AVAILABLE BOOKS IN LIBRARY
-//                    listBooks();
-                    bookDao.findAll(connection).forEach(book -> System.out.println(book.getBookName()));
+                    bookDao.findAll().forEach(book -> System.out.println(book.getTitle()));
                     break;
                 case 2:
                     //SEARCH BOOK
@@ -64,39 +66,18 @@ public class Library {
                     break;
                 case 3:
                     //SHOW BORROW HISTORY
-                    if (client.getBorrowedBooks().size() > 0) {
-                        client.getBorrowedBooks()
-                                .forEach(borrowedBook -> System.out.println(borrowedBook.getBook().getBookName() +
-                                        " borrowed on " + borrowedBook.getBorrowedOn()));
-                    } else {
-                        System.out.println("You haven't borrowed any books yet!");
-                    }
+                    //TODO
                     break;
                 case 4:
                     //SHOW CURRENT BORROWED BOOK
-                    if (client.getCurrentBorrowedBook() != null) {
-                        System.out.println(client.getCurrentBorrowedBook().getBook().getBookName() +
-                                " borrowed on " + client.getCurrentBorrowedBook().getBorrowedOn());
-                    } else {
-                        System.out.println("You don't have a current borrowed book!");
-                    }
-
+                    //TODO
                     break;
                 case 5:
                     //BORROW BOOK
-                    if (client.getCurrentBorrowedBook() == null) {
-                        System.out.println("ISBN");
-                        long isbn = scanner.nextLong();
-                        borrowReturnService.borrowBook(searchService.searchByIsbn(isbn, bookList), client, connection);
-                    } else {
-                        System.out.println("please first return your borrowed book");
-                        System.out.println(client.getCurrentBorrowedBook().getBook().getBookName());
-                    }
+                    //TODO
                     break;
                 case 6:
-                    //RETURN BORROWED BOOK
-                    borrowReturnService.returnBook(borrowReturnService
-                            .getCurrentBorrowedBook(client, bookList, connection).getBook(), client, connection);
+                    //TODO
                     break;
                 case 7:
                     //LOG OUT
@@ -109,7 +90,7 @@ public class Library {
             }
         } catch (InputMismatchException e) {
             System.out.println("Invalid input");
-            scanner = new Scanner(System.in);
+            sc = new Scanner(System.in);
             clientLogic();
         }
     }
@@ -126,10 +107,10 @@ public class Library {
         System.out.println("8 - Exit");
     }
 
-    private void setClientProperties() throws SQLException {
-        client.setBorrowedBooks(borrowReturnService.getBorrowHistory(client, bookDao.findAll(connection), connection));
-        client.setCurrentBorrowedBook(borrowReturnService.getCurrentBorrowedBook(client, bookDao.findAll(connection), connection));
-    }
+//    private void setClientProperties() throws SQLException {
+//        client.setBorrowedBooks(borrowReturnService.getBorrowHistory(client, bookDao.findAll(connection), connection));
+//        client.setCurrentBorrowedBook(borrowReturnService.getCurrentBorrowedBook(client, bookDao.findAll(connection), connection));
+//    }
 
 //------------------- LIBRARIAN RELATED METHODS ------------------------------------------------------------------------
 
@@ -139,23 +120,21 @@ public class Library {
         try {
             int option;
             librarianMenu();
-            option = scanner.nextInt();
+            option = sc.nextInt();
             switch (option) {
                 case 1:
                     //SHOW AVAILABLE BOOKS IN LIBRARY
                     listBooks();
                     break;
                 case 2:
-                    clientDao.findAll(connection).forEach(client -> System.out.println(client.getFirstName() + " " + client.getLastName()));
+                    clientDao.findAll().forEach(client -> System.out.println(client.getFirstName() + " " + client.getLastName()));
                     break;
                 case 3:
-                    currentBorrowedBooks().forEach(borrowedBookByClient -> System.out.println(borrowedBookByClient.getBook().getBookName() + " borrowed by " +
-                            borrowedBookByClient.getClient().getFirstName() + " " + borrowedBookByClient.getClient().getLastName() + " on " + borrowedBookByClient.getBorrowedOn()));
+                    //TODO
                     break;
                 case 4:
-                    borrowHistory().forEach(borrowedBookByClient -> System.out.println(borrowedBookByClient.getBook().getBookName() + " borrowed by " +
-                            borrowedBookByClient.getClient().getFirstName() + " " + borrowedBookByClient.getClient().getLastName() +
-                            " borrowed on " + borrowedBookByClient.getBorrowedOn() + " returned on " + borrowedBookByClient.getReturnedOn()));
+                    //TODO
+                    //TODO
                     break;
                 case 5:
                     //add new book
@@ -172,7 +151,7 @@ public class Library {
             }
         } catch (InputMismatchException e) {
             System.out.println("Invalid input");
-            scanner = new Scanner(System.in);
+            sc = new Scanner(System.in);
             librarianLogic();
         }
 
@@ -190,28 +169,28 @@ public class Library {
         System.out.println("8 - Exit");
     }
 
-    private List<BorrowedBookByClient> currentBorrowedBooks() throws SQLException {
-        List<BorrowedBookByClient> currentBorrowedBooks = new ArrayList<>();
-        for (Client client : clientDao.findAll(connection)) {
-            if (borrowReturnService.getCurrentBorrowedBook(client, bookList, connection) != null) {
-                currentBorrowedBooks.add(new BorrowedBookByClient(borrowReturnService.getCurrentBorrowedBook(client, bookList, connection).getBook(),
-                        borrowReturnService.getCurrentBorrowedBook(client, bookList, connection).getBorrowedOn(), client));
-            }
-        }
-        return currentBorrowedBooks;
-    }
-
-    private List<BorrowedBookByClient> borrowHistory() throws SQLException {
-        List<BorrowedBookByClient> borrowedBookByClients = new ArrayList<>();
-        for (Client client : clientDao.findAll(connection)) {
-            if (borrowReturnService.getBorrowHistory(client, bookList, connection).size() > 0) {
-                for (BorrowedBook borrowedBook : borrowReturnService.getBorrowHistory(client, bookList, connection)) {
-                    borrowedBookByClients.add(new BorrowedBookByClient(borrowedBook.getBook(), borrowedBook.getBorrowedOn(), borrowedBook.getReturnedOn(), client));
-                }
-            }
-        }
-        return borrowedBookByClients;
-    }
+//      private List<BorrowedBookByClient> currentBorrowedBooks() throws SQLException {
+//        List<BorrowedBookByClient> currentBorrowedBooks = new ArrayList<>();
+//        for (Client client : clientDao.findAll()) {
+//            if (borrowReturnService.getCurrentBorrowedBook(client, bookList) != null) {
+//                currentBorrowedBooks.add(new BorrowedBookByClient(borrowReturnService.getCurrentBorrowedBook(client, bookList, connection).getBook(),
+//                        borrowReturnService.getCurrentBorrowedBook(client, bookList, connection).getBorrowedOn(), client));
+//            }
+//        }
+//        return currentBorrowedBooks;
+//     }
+//
+//    private List<BorrowedBookByClient> borrowHistory() throws SQLException {
+//        List<BorrowedBookByClient> borrowedBookByClients = new ArrayList<>();
+//        for (Client client : clientDao.findAll(connection)) {
+//            if (borrowReturnService.getBorrowHistory(client, bookList, connection).size() > 0) {
+//                for (BorrowedBook borrowedBook : borrowReturnService.getBorrowHistory(client, bookList, connection)) {
+//                    borrowedBookByClients.add(new BorrowedBookByClient(borrowedBook.getBook(), borrowedBook.getBorrowedOn(), borrowedBook.getReturnedOn(), client));
+//                }
+//            }
+//        }
+//        return borrowedBookByClients;
+//    }
 
 // ------------------- GENERAL USE METHODS -----------------------------------------------------------------------------
 
@@ -238,29 +217,28 @@ public class Library {
         System.out.println("3 - Return");
     }
 
-    private void doLogin() throws SQLException {
+    private void doLogin() {
         System.out.println("Please enter username:");
-        String username = scanner.next();
-        int id = authService.getUserId(connection, username);
-        if (id > 0) {
-            byte tries = 3;
+        String username = sc.next();
+        int userID = authService.getUserId(username);
+        if (userID > 0) {
+            System.out.println("Username found!");
+            int tries = 3;
             do {
-                System.out.println("Please enter password");
-                String password = scanner.next();
-                ResultSet resultSet = authService.getUser(connection, id, password);
-                if (authService.getClient(connection, resultSet) != null) {
-                    client = authService.getClient(connection, resultSet);
-                } else if (authService.getLibrarian(connection, resultSet) != null) {
-                    librarian = authService.getLibrarian(connection, resultSet);
+                System.out.println("Enter password");
+                System.out.println(tries + " tries remaining!");
+                String password = sc.next();
+                if (authService.getUser(userID, password) instanceof Client) {
+                    client = (Client) authService.getUser(userID, password);
+                } else if (authService.getUser(userID, password) instanceof Librarian) {
+                    librarian = (Librarian) authService.getUser(userID, password);
+                } else {
+                    tries--;
                 }
-                tries--;
-                if (tries == 0) {
-                    System.out.println("Exceeded maximum tries number!");
-                    break;
-                }
-            } while (client == null && librarian == null && tries > 0);
-        } else {
-            System.out.println("Username could not be found! Please try again!");
+            } while (tries > 0 && client == null && librarian == null);
+            if (tries == 0) {
+                System.out.println("Password entered wrong too many times!");
+            }
         }
     }
 
@@ -282,37 +260,17 @@ public class Library {
         try {
             printBookListingMenu();
             System.out.println("enter option");
-            int option = scanner.nextInt();
+            int option = sc.nextInt();
             switch (option) {
                 case 1:
-                    bookList.sort(Comparator.comparing(Book::getBookName));
-                    for (Book book : bookList) {
-                        System.out.print(book.getBookName() + " - ");
-                        System.out.print(" - stock : " + book.getStock() + " ");
-                        System.out.print(" ISBN - " + book.getIsbn() + " - ");
-                        for (Author author : book.getAuthors()) {
-                            System.out.print(author.getFirstName() + " " + author.getLastName() + " - ");
-                        }
-                        for (String genre : book.getGenres()) {
-                            System.out.print(genre + ", ");
-                        }
-                        System.out.println();
-                    }
+                    List<Book> booksAZ = new ArrayList<>(bookDao.findAll());
+                    booksAZ.sort((book, t1) -> book.getTitle().compareTo(t1.getTitle()));
+                    booksAZ.forEach(book -> System.out.println(book.getTitle()));
                     break;
                 case 2:
-                    bookList.sort((book, t1) -> t1.getBookName().compareTo(book.getBookName()));
-                    for (Book book : bookList) {
-                        System.out.print(book.getBookName() + " - ");
-                        System.out.print(" - stock : " + book.getStock() + " ");
-                        System.out.print(" ISBN - " + book.getIsbn() + " - ");
-                        for (Author author : book.getAuthors()) {
-                            System.out.print(author.getFirstName() + " " + author.getLastName() + " - ");
-                        }
-                        for (String genre : book.getGenres()) {
-                            System.out.print(genre + ", ");
-                        }
-                        System.out.println();
-                    }
+                    List<Book> booksZA = new ArrayList<>(bookDao.findAll());
+                    booksZA.sort((book, t1) -> t1.getTitle().compareTo(book.getTitle()));
+                    booksZA.forEach(book -> System.out.println(book.getTitle()));
                     break;
                 case 3:
                     //return
@@ -325,57 +283,42 @@ public class Library {
             }
         } catch (InputMismatchException e) {
             System.out.println("Invalid input");
-            scanner = new Scanner(System.in);
+            sc = new Scanner(System.in);
             listBooks();
         }
     }
 
-    private void setBookAuthorGenre() throws SQLException {
-        bookList = bookDao.findAll(connection);
-        bookList.forEach(book -> {
-            try {
-                book.setAuthors(authorDao.findByBookId(connection, book.getId()));
-                book.setGenres(genreDao.findGenresByBookId(connection, book.getId()));
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        });
-    }
 
     private void doSearchBook() throws SQLException {
         printSearchMenu();
-        int option = scanner.nextInt();
+        int option = sc.nextInt();
         switch (option) {
             case 1:
                 //search by title
                 System.out.println("Title");
-                scanner.skip("\n");
-                String title = scanner.nextLine();
-                bookDao.findByTitle(connection,title).forEach(book -> System.out.println(book.getBookName()));
-                //searchService.searchByTitle(title, bookList).forEach(System.out::println);
+                sc.skip("\n");
+                String title = sc.nextLine();
+                bookDao.findByTitle(title).forEach(book -> System.out.println(book.getTitle()));
                 break;
             case 2:
                 //search by author
                 System.out.println("First name");
-                String firstName = scanner.nextLine();
+                String firstName = sc.nextLine();
                 System.out.println("Last name");
-                String lastName = scanner.nextLine();
-                searchService.searchByAuthor(searchService.getAuthor(firstName, lastName, authorDao.findAll(connection)), bookList)
-                        .forEach(System.out::println);
+                String lastName = sc.nextLine();
                 break;
             case 3:
                 //search by genre
                 System.out.println("Genre");
-                scanner.skip("\n");
-                String genre = scanner.nextLine();
-                //searchService.searchByGenre(searchService.getGenre(genre, genreDao.findAll(connection)), bookList).forEach(System.out::println);
+                sc.skip("\n");
+                String genre = sc.nextLine();
+                bookDao.findByGenre(genre).forEach(book -> System.out.println(book.getTitle()));
                 break;
             case 4:
                 //search by isbn
                 System.out.println("ISBN");
-                long isbn = scanner.nextLong();
-//                searchService.searchByIsbn(isbn, bookList);
-                System.out.println(bookDao.findByIsbn(connection,isbn).getBookName());
+                long isbn = sc.nextLong();
+                System.out.println(bookDao.findByIsbn(isbn).getTitle());
                 break;
             default:
                 doSearchBook();
@@ -387,10 +330,9 @@ public class Library {
             System.out.println((i + 1) + " - " + bookList.get(i));
         }
         System.out.println("Enter choice");
-        int choice = scanner.nextInt();
+        int choice = sc.nextInt();
         return bookList.get(choice - 1);
     }
-
 
 
 }

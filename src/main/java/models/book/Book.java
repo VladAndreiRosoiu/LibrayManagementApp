@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Book {
     private int id;
-    private String bookName;
+    private String title;
     private List<Author> authors;
     private List<String> genres;
     private long isbn;
@@ -13,9 +13,9 @@ public class Book {
     private int stock;
 
 
-    public Book(int id, String bookName, List<Author> authors, List<String> genres, long isbn, LocalDate releaseDate, int stock) {
+    public Book(int id, String title, List<Author> authors, List<String> genres, long isbn, LocalDate releaseDate, int stock) {
         this.id = id;
-        this.bookName = bookName;
+        this.title = title;
         this.authors = authors;
         this.genres = genres;
         this.isbn = isbn;
@@ -31,12 +31,12 @@ public class Book {
         this.id = id;
     }
 
-    public String getBookName() {
-        return bookName;
+    public String getTitle() {
+        return title;
     }
 
-    public void setBookName(String bookName) {
-        this.bookName = bookName;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public List<Author> getAuthors() {
@@ -83,7 +83,7 @@ public class Book {
     public String toString() {
         return "Book{" +
                 "id=" + id +
-                ", bookName='" + bookName + '\'' +
+                ", bookName='" + title + '\'' +
                 ", authors=" + authors +
                 ", genres=" + genres +
                 ", isbn=" + isbn +

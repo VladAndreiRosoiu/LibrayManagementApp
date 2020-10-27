@@ -1,7 +1,5 @@
-import database.GetDBConnection;
 import models.Library;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 
 public class Main {

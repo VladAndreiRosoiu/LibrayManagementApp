@@ -2,7 +2,6 @@ package services;
 
 import models.book.Book;
 import models.book.BorrowedBook;
-import models.book.BorrowedBookByClient;
 import models.user.Client;
 
 import java.sql.Connection;

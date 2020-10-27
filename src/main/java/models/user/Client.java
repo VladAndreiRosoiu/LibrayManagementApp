@@ -1,6 +1,5 @@
 package models.user;
 
-import models.book.Book;
 import models.book.BorrowedBook;
 
 import java.util.List;

@@ -1,18 +1,19 @@
 package dao;
 
-import database.GetDBConnection;
+import database.GetConnection;
 import models.book.BorrowedBook;
 import models.user.Client;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DbClientDao implements ClientDao {
 
-    Connection connection = new GetDBConnection().getConnection();
+    Connection connection = new GetConnection().getConnection();
 
     @Override
     public List<Client> findByFirstName(String firstName) {
@@ -42,17 +43,22 @@ public class DbClientDao implements ClientDao {
     @Override
     public List<Client> findAll() {
         List<Client> clientList = new ArrayList<>();
-        Statement stmt = connection.createStatement();
-        ResultSet resultSet = stmt.executeQuery("SELECT * FROM libraryDB.users WHERE user_type = 'CLIENT'");
-        while (resultSet.next()) {
-            int id = resultSet.getInt("id");
-            String firstName = resultSet.getString("first_name");
-            String lastName = resultSet.getString("last_name");
-            String username = resultSet.getString("username");
-            String email = resultSet.getString("email");
-            List<BorrowedBook> borrowedBooks = new ArrayList<>();
-            boolean isActive = resultSet.getBoolean("is_active");
-            clientList.add(new Client(id, firstName, lastName, username, email, borrowedBooks, null, isActive));
+        try {
+            Statement stmt = connection.createStatement();
+            ResultSet resultSet = stmt.executeQuery("SELECT * FROM libraryDB.users WHERE user_type = 'CLIENT'");
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String firstName = resultSet.getString("first_name");
+                String lastName = resultSet.getString("last_name");
+                String username = resultSet.getString("username");
+                String email = resultSet.getString("email");
+                List<BorrowedBook> borrowedBooks = new ArrayList<>();
+                boolean isActive = resultSet.getBoolean("is_active");
+                clientList.add(new Client(id, firstName, lastName, username, email, borrowedBooks, null, isActive));
+            }
+            return clientList;
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return clientList;
     }
