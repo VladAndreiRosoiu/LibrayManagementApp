@@ -6,5 +6,6 @@ public interface GenreDao extends EntityDao<String> {
 
     List<String> findGenresByBookId(int bookId);
 
-    String findByKeyword(String keyword);
+    List<Integer> getInsertedGenresIds(List<String> genreList);
+
 }

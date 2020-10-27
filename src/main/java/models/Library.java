@@ -4,6 +4,7 @@ import dao.*;
 import models.book.Book;
 import models.user.Client;
 import models.user.Librarian;
+import models.user.User;
 import services.AuthService;
 import services.AuthServiceImpl;
 import services.BorrowReturnService;
@@ -220,18 +221,18 @@ public class Library {
     private void doLogin() {
         System.out.println("Please enter username:");
         String username = sc.next();
-        int userID = authService.getUserId(username);
-        if (userID > 0) {
-            System.out.println("Username found!");
+        int userId = authService.getUserId(username);
+        if (userId > 0) {
             int tries = 3;
             do {
                 System.out.println("Enter password");
                 System.out.println(tries + " tries remaining!");
                 String password = sc.next();
-                if (authService.getUser(userID, password) instanceof Client) {
-                    client = (Client) authService.getUser(userID, password);
-                } else if (authService.getUser(userID, password) instanceof Librarian) {
-                    librarian = (Librarian) authService.getUser(userID, password);
+                User user = authService.getUser(userId,password);
+                if (user instanceof Client) {
+                    client = (Client) user;
+                } else if (user instanceof Librarian) {
+                    librarian = (Librarian) user;
                 } else {
                     tries--;
                 }

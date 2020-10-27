@@ -77,18 +77,8 @@ public class DbGenreDao implements GenreDao {
     }
 
     @Override
-    public String findByKeyword(String keyword) {
-        try {
-            PreparedStatement pStmGetGenre = connection.prepareStatement(
-                    "SELECT * FROM libraryDB.genre WHERE genre_type LIKE ?");
-            pStmGetGenre.setString(1, keyword);
-            ResultSet rSetGetGenre = pStmGetGenre.executeQuery();
-            if (rSetGetGenre.next()){
-                return rSetGetGenre.getString("genre_type");
-            }
-        }catch (SQLException e){
-            e.printStackTrace();
-        }
+    public List<Integer> getInsertedGenresIds(List<String> genreList) {
         return null;
     }
+
 }

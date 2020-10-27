@@ -35,12 +35,12 @@ public class DbAuthorDao implements AuthorDao {
                     authorList.add(new Author(idAut, firstName, lastName, description, birthDate));
                 }
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return authorList;
     }
+
 
     @Override
     public List<Author> findAll() {
@@ -136,4 +136,10 @@ public class DbAuthorDao implements AuthorDao {
     public boolean remove(int authorId) {
         return false;
     }
+
+    @Override
+    public List<Integer> getInsertedAuthorsIds(List<Author> authorList) {
+        return null;
+    }
+
 }

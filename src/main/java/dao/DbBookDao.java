@@ -409,8 +409,8 @@ public class DbBookDao implements BookDao {
     @Override
     public boolean create(Book book) {
         try {
-            //        genreDao.createGenre();  if it doesn't exists! if it exists, get his id. maybe do a for-each?
-            //        authorDao.createAuthor();
+            List<Integer> authorsIds = new DbAuthorDao().getInsertedAuthorsIds(book.getAuthors());
+            List<Integer> genresIds = new DbGenreDao().getInsertedGenresIds(book.getGenres());
             PreparedStatement preparedStatement = connection.prepareStatement(
                     "INSERT INTO libraryDB.books(book_name, isbn, stock, release_date) VALUES (?,?,?,?)");
             preparedStatement.setString(1, book.getTitle());
