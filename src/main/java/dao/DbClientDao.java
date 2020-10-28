@@ -83,8 +83,4 @@ public class DbClientDao implements ClientDao {
         return false;
     }
 
-    @Override
-    public boolean remove(int itemId) {
-        return false;
-    }
 }

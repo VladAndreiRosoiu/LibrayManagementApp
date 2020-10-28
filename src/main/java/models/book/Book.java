@@ -12,6 +12,14 @@ public class Book {
     private LocalDate releaseDate;
     private int stock;
 
+    public Book(String title, List<Author> authors, List<String> genres, long isbn, LocalDate releaseDate, int stock) {
+        this.title = title;
+        this.authors = authors;
+        this.genres = genres;
+        this.isbn = isbn;
+        this.releaseDate = releaseDate;
+        this.stock = stock;
+    }
 
     public Book(int id, String title, List<Author> authors, List<String> genres, long isbn, LocalDate releaseDate, int stock) {
         this.id = id;

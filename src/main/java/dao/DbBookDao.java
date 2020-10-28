@@ -61,7 +61,7 @@ public class DbBookDao implements BookDao {
                 }
                 return new Book(
                         bookId,
-                        rSetGetBook.getString("book_name"),
+                        rSetGetBook.getString("book_title"),
                         authorList,
                         genreList,
                         rSetGetBook.getLong("isbn"),
@@ -80,7 +80,7 @@ public class DbBookDao implements BookDao {
         List<Book> bookList = new ArrayList<>();
         try {
             PreparedStatement pStmtGetBook = connection.prepareStatement(
-                    "SELECT * FROM libraryDB.books WHERE book_name LIKE ?");
+                    "SELECT * FROM libraryDB.books WHERE book_title LIKE ?");
             pStmtGetBook.setString(1, "%" + name + "%");
             ResultSet rSetGetBook = pStmtGetBook.executeQuery();
             while (rSetGetBook.next()) {
@@ -124,7 +124,7 @@ public class DbBookDao implements BookDao {
                 }
                 bookList.add(new Book(
                         bookId,
-                        rSetGetBook.getString("book_name"),
+                        rSetGetBook.getString("book_title"),
                         authorList,
                         genreList,
                         rSetGetBook.getLong("isbn"),
@@ -186,7 +186,7 @@ public class DbBookDao implements BookDao {
                 }
                 bookList.add(new Book(
                         bookId,
-                        rSetGetBook.getString("book_name"),
+                        rSetGetBook.getString("book_title"),
                         authorList,
                         genreList,
                         rSetGetBook.getLong("isbn"),
@@ -261,7 +261,7 @@ public class DbBookDao implements BookDao {
                     }
                     bookList.add(new Book(
                             bookId,
-                            rSetGetBook.getString("book_name"),
+                            rSetGetBook.getString("book_title"),
                             authorList,
                             genreList,
                             rSetGetBook.getLong("isbn"),
@@ -275,11 +275,6 @@ public class DbBookDao implements BookDao {
             e.printStackTrace();
         }
         return bookList;
-    }
-
-    @Override
-    public boolean removeByIsbn(long isbn) {
-        return false;
     }
 
     @Override
@@ -329,7 +324,7 @@ public class DbBookDao implements BookDao {
                 }
                 bookList.add(new Book(
                         bookId,
-                        rSetGetBook.getString("book_name"),
+                        rSetGetBook.getString("book_title"),
                         authorList,
                         genreList,
                         rSetGetBook.getLong("isbn"),
@@ -392,7 +387,7 @@ public class DbBookDao implements BookDao {
                 }
                 return new Book(
                         bookId,
-                        rSetGetBook.getString("book_name"),
+                        rSetGetBook.getString("book_title"),
                         authorList,
                         genreList,
                         rSetGetBook.getLong("isbn"),
@@ -409,20 +404,42 @@ public class DbBookDao implements BookDao {
     @Override
     public boolean create(Book book) {
         try {
+            Statement setAutoCommit = connection.createStatement();
+            setAutoCommit.executeQuery("SET autocommit = 0");
+            Statement startTransaction = connection.createStatement();
+            startTransaction.executeQuery("START TRANSACTION");
             List<Integer> authorsIds = new DbAuthorDao().getInsertedAuthorsIds(book.getAuthors());
             List<Integer> genresIds = new DbGenreDao().getInsertedGenresIds(book.getGenres());
-            PreparedStatement preparedStatement = connection.prepareStatement(
-                    "INSERT INTO libraryDB.books(book_name, isbn, stock, release_date) VALUES (?,?,?,?)");
-            preparedStatement.setString(1, book.getTitle());
-            preparedStatement.setString(2, String.valueOf(book.getIsbn()));
-            preparedStatement.setString(3, String.valueOf(book.getStock()));
-            preparedStatement.setString(4, String.valueOf(book.getReleaseDate()));
-            preparedStatement.executeUpdate();
-
-            PreparedStatement pStmt = connection.prepareStatement(
-                    "SET autocommit = 0 ;" +
-                            "START TRANSACTION;" +
-                            "INSERT INTO libraryDB.books(book_name,isbn,stock,release_date) VALUES (?,?,?,?)");
+            PreparedStatement pStmtInsertBook = connection.prepareStatement(
+                    "INSERT INTO libraryDB.books (book_title, isbn, stock, release_date) VALUES (?,?,?,?)",
+                    Statement.RETURN_GENERATED_KEYS);
+            pStmtInsertBook.setString(1, book.getTitle());
+            pStmtInsertBook.setString(2, String.valueOf(book.getIsbn()));
+            pStmtInsertBook.setString(3, String.valueOf(book.getStock()));
+            pStmtInsertBook.setString(4, String.valueOf(book.getReleaseDate()));
+            pStmtInsertBook.executeUpdate();
+            int bookId = 0;
+            try (ResultSet generatedKeys = pStmtInsertBook.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    bookId = generatedKeys.getInt(1);
+                }
+            }
+            PreparedStatement pStmtLinkBookAuthor = connection.prepareStatement(
+                    "INSERT INTO libraryDB.book_author(id_book, id_author) VALUES (?,?)");
+            for (Integer authorId : authorsIds) {
+                pStmtLinkBookAuthor.setInt(1, bookId);
+                pStmtLinkBookAuthor.setInt(2, authorId);
+                pStmtLinkBookAuthor.executeUpdate();
+            }
+            PreparedStatement pStmtLinkBookGenre = connection.prepareStatement(
+                    "INSERT INTO libraryDB.book_genre(id_book, id_genre) VALUES (?,?)");
+            for (Integer genreId : genresIds) {
+                pStmtLinkBookGenre.setInt(1, bookId);
+                pStmtLinkBookGenre.setInt(2, genreId);
+                pStmtLinkBookGenre.executeUpdate();
+            }
+            Statement commitStmt = connection.createStatement();
+            commitStmt.executeQuery("COMMIT");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -436,11 +453,17 @@ public class DbBookDao implements BookDao {
 
     @Override
     public boolean remove(Book book) {
-        return false;
-    }
-
-    @Override
-    public boolean remove(int id) {
+        try {
+            PreparedStatement pStmt = connection.prepareStatement(
+                    "UPDATE libraryDB.books SET can_be_displayed = FALSE WHERE id = ?");
+            pStmt.setInt(1, book.getId());
+            int affectedRows = pStmt.executeUpdate();
+            if (affectedRows > 0) {
+                return true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return false;
     }
 }

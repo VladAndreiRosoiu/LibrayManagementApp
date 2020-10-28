@@ -12,34 +12,34 @@ public class DbAuthorDao implements AuthorDao {
 
     Connection connection = new GetConnection().getConnection();
 
-    @Override
-    public List<Author> findByBookId(int bookId) {
-        List<Author> authorList = new ArrayList<>();
-        try {
-            PreparedStatement preparedStatement = connection.
-                    prepareStatement("SELECT id_author FROM libraryDB.book_author WHERE id_book = ?");
-            preparedStatement.setString(1, String.valueOf(bookId));
-            ResultSet resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()) {
-                int id = resultSet.getInt("id_author");
-                PreparedStatement preparedStmtAuthor = connection.
-                        prepareStatement("SELECT * FROM libraryDB.authors WHERE id = ?");
-                preparedStmtAuthor.setString(1, String.valueOf(id));
-                ResultSet resultSetAuthor = preparedStmtAuthor.executeQuery();
-                while (resultSetAuthor.next()) {
-                    int idAut = resultSetAuthor.getInt("id");
-                    String firstName = resultSetAuthor.getString("first_name");
-                    String lastName = resultSetAuthor.getString("last_name");
-                    String description = resultSetAuthor.getString("additional_info");
-                    LocalDate birthDate = resultSetAuthor.getDate("birth_date").toLocalDate();
-                    authorList.add(new Author(idAut, firstName, lastName, description, birthDate));
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return authorList;
-    }
+//    @Override
+//    public List<Author> findByBookId(int bookId) {
+//        List<Author> authorList = new ArrayList<>();
+//        try {
+//            PreparedStatement preparedStatement = connection.
+//                    prepareStatement("SELECT id_author FROM libraryDB.book_author WHERE id_book = ?");
+//            preparedStatement.setString(1, String.valueOf(bookId));
+//            ResultSet resultSet = preparedStatement.executeQuery();
+//            while (resultSet.next()) {
+//                int id = resultSet.getInt("id_author");
+//                PreparedStatement preparedStmtAuthor = connection.
+//                        prepareStatement("SELECT * FROM libraryDB.authors WHERE id = ?");
+//                preparedStmtAuthor.setString(1, String.valueOf(id));
+//                ResultSet resultSetAuthor = preparedStmtAuthor.executeQuery();
+//                while (resultSetAuthor.next()) {
+//                    int idAut = resultSetAuthor.getInt("id");
+//                    String firstName = resultSetAuthor.getString("first_name");
+//                    String lastName = resultSetAuthor.getString("last_name");
+//                    String description = resultSetAuthor.getString("additional_info");
+//                    LocalDate birthDate = resultSetAuthor.getDate("birth_date").toLocalDate();
+//                    authorList.add(new Author(idAut, firstName, lastName, description, birthDate));
+//                }
+//            }
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//        return authorList;
+//    }
 
 
     @Override
@@ -132,10 +132,6 @@ public class DbAuthorDao implements AuthorDao {
         return false;
     }
 
-    @Override
-    public boolean remove(int authorId) {
-        return false;
-    }
 
     @Override
     public List<Integer> getInsertedAuthorsIds(List<Author> authorList) {
@@ -152,7 +148,8 @@ public class DbAuthorDao implements AuthorDao {
                     authorIds.add(rSetCheckAuthor.getInt("id"));
                 } else {
                     PreparedStatement pStmtInsertAuthor = connection.prepareStatement(
-                            "INSERT INTO libraryDB.authors(first_name, last_name, additional_info, birth_date ) VALUES (?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+                            "INSERT INTO libraryDB.authors(first_name, last_name, additional_info, birth_date ) VALUES (?,?,?,?)",
+                            Statement.RETURN_GENERATED_KEYS);
                     pStmtInsertAuthor.setString(1, author.getFirstName());
                     pStmtInsertAuthor.setString(2, author.getLastName());
                     pStmtInsertAuthor.setString(3, author.getDescription());

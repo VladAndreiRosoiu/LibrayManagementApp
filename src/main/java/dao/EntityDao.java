@@ -13,5 +13,5 @@ public interface EntityDao<T> {
 
     boolean remove(T item);
 
-    boolean remove(int itemId);
+//  boolean remove(int itemId);
 }

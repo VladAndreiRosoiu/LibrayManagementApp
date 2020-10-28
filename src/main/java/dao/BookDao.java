@@ -15,5 +15,5 @@ public interface BookDao extends EntityDao<Book> {
 
     List<Book> findByGenre(String genre);
 
-    boolean removeByIsbn(long isbn);
+    //boolean removeByIsbn(long isbn);
 }
