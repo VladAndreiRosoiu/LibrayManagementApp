@@ -418,6 +418,11 @@ public class DbBookDao implements BookDao {
             preparedStatement.setString(3, String.valueOf(book.getStock()));
             preparedStatement.setString(4, String.valueOf(book.getReleaseDate()));
             preparedStatement.executeUpdate();
+
+            PreparedStatement pStmt = connection.prepareStatement(
+                    "SET autocommit = 0 ;" +
+                            "START TRANSACTION;" +
+                            "INSERT INTO libraryDB.books(book_name,isbn,stock,release_date) VALUES (?,?,?,?)");
         } catch (SQLException e) {
             e.printStackTrace();
         }

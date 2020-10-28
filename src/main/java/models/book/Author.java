@@ -10,6 +10,13 @@ public class Author {
     private String description;
     private LocalDate birthDate;
 
+    public Author(String firstName, String lastName, String description, LocalDate birthDate) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.description = description;
+        this.birthDate = birthDate;
+    }
+
     public Author(int id, String firstName, String lastName, String description, LocalDate birthDate) {
         this.id = id;
         this.firstName = firstName;

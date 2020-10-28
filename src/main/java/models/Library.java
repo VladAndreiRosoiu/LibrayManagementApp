@@ -27,7 +27,7 @@ public class Library {
     public Library() {
     }
 
-    public void initLibrary() throws SQLException {
+    public void initLibrary() {
         do {
             int option;
             printWelcomeMenu();
@@ -50,7 +50,7 @@ public class Library {
 
 //------------------- CLIENT RELATED METHODS ---------------------------------------------------------------------------
 
-    private void clientLogic() throws SQLException {
+    private void clientLogic() {
         //TODO client logic
         try {
             clientMenu();
@@ -115,7 +115,7 @@ public class Library {
 
 //------------------- LIBRARIAN RELATED METHODS ------------------------------------------------------------------------
 
-    private void librarianLogic() throws SQLException {
+    private void librarianLogic()  {
         //TODO librarian logic
 
         try {
@@ -243,7 +243,7 @@ public class Library {
         }
     }
 
-    private void doWelcomeMenu(int option) throws SQLException {
+    private void doWelcomeMenu(int option) {
         switch (option) {
             case 1:
                 doLogin();
@@ -257,7 +257,7 @@ public class Library {
         }
     }
 
-    private void listBooks() throws SQLException {
+    private void listBooks() {
         try {
             printBookListingMenu();
             System.out.println("enter option");
@@ -290,7 +290,7 @@ public class Library {
     }
 
 
-    private void doSearchBook() throws SQLException {
+    private void doSearchBook()  {
         printSearchMenu();
         int option = sc.nextInt();
         switch (option) {

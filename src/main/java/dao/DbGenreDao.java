@@ -78,7 +78,34 @@ public class DbGenreDao implements GenreDao {
 
     @Override
     public List<Integer> getInsertedGenresIds(List<String> genreList) {
-        return null;
+
+        List<Integer> genresIds = new ArrayList<>();
+        try {
+            for (String genre : genreList) {
+                PreparedStatement pStmtCheckGenre = connection.prepareStatement(
+                        "SELECT * FROM libraryDB.genre WHERE genre_type LIKE ?");
+                pStmtCheckGenre.setString(1, genre);
+                ResultSet rSetCheckGenre = pStmtCheckGenre.executeQuery();
+                if (rSetCheckGenre.next()) {
+                    genresIds.add(rSetCheckGenre.getInt("id"));
+                } else {
+                    PreparedStatement pStmtInsertGenre = connection.prepareStatement(
+                            "INSERT INTO libraryDB.genre(genre_type) VALUES (?)", Statement.RETURN_GENERATED_KEYS);
+                    pStmtInsertGenre.setString(1, genre);
+                    pStmtInsertGenre.executeUpdate();
+                    try (ResultSet generatedKeys = pStmtInsertGenre.getGeneratedKeys()) {
+                        if (generatedKeys.next()) {
+                            genresIds.add(generatedKeys.getInt(1));
+                        }
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return genresIds;
     }
 
 }

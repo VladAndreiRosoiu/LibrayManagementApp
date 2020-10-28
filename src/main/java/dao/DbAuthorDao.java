@@ -87,11 +87,11 @@ public class DbAuthorDao implements AuthorDao {
     @Override
     public boolean create(Author author) {
         try {
-            List <Integer> dbId = new ArrayList<>();
+            List<Integer> dbId = new ArrayList<>();
             PreparedStatement statement = connection.prepareStatement(
                     "SELECT * FROM libraryDB.authors WHERE first_name LIKE ? AND last_name LIKE ?");
-            statement.setString(1,author.getFirstName());
-            statement.setString(2,author.getLastName());
+            statement.setString(1, author.getFirstName());
+            statement.setString(2, author.getLastName());
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 dbId.add(resultSet.getInt("id"));
@@ -139,7 +139,38 @@ public class DbAuthorDao implements AuthorDao {
 
     @Override
     public List<Integer> getInsertedAuthorsIds(List<Author> authorList) {
-        return null;
+        List<Integer> authorIds = new ArrayList<>();
+        try {
+            for (Author author : authorList) {
+                PreparedStatement pStmtCheckAuthor = connection.prepareStatement(
+                        "SELECT * FROM libraryDB.authors WHERE first_name = ? AND last_name = ? AND birth_date = ?");
+                pStmtCheckAuthor.setString(1, author.getFirstName());
+                pStmtCheckAuthor.setString(2, author.getLastName());
+                pStmtCheckAuthor.setString(3, author.getBirthDate().toString());
+                ResultSet rSetCheckAuthor = pStmtCheckAuthor.executeQuery();
+                if (rSetCheckAuthor.next()) {
+                    authorIds.add(rSetCheckAuthor.getInt("id"));
+                } else {
+                    PreparedStatement pStmtInsertAuthor = connection.prepareStatement(
+                            "INSERT INTO libraryDB.authors(first_name, last_name, additional_info, birth_date ) VALUES (?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+                    pStmtInsertAuthor.setString(1, author.getFirstName());
+                    pStmtInsertAuthor.setString(2, author.getLastName());
+                    pStmtInsertAuthor.setString(3, author.getDescription());
+                    pStmtInsertAuthor.setString(4, author.getBirthDate().toString());
+                    pStmtInsertAuthor.executeUpdate();
+                    try (ResultSet generatedKeys = pStmtInsertAuthor.getGeneratedKeys()) {
+                        if (generatedKeys.next()) {
+                            authorIds.add(generatedKeys.getInt(1));
+                        }
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return authorIds;
     }
 
 }
